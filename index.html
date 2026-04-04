@@ -371,6 +371,42 @@
 
   .retry-btn:hover { opacity: 0.85; }
 
+  .speak-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 0.75rem;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--teal);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .speak-btn:hover { background: var(--teal-light); border-color: var(--teal); }
+  .speak-btn.speaking { background: var(--teal-light); border-color: var(--teal); }
+
+  .quiz-speak {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 0.5rem;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--teal);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .quiz-speak:hover { background: var(--teal-light); }
+
   @media (max-width: 480px) {
     .card-chinese { font-size: 30px; }
     .card-scene { height: 200px; }
@@ -538,6 +574,21 @@ let quizScore = 0;
 let quizTotal = 0;
 let quizAnswered = false;
 
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN';
+  u.rate = 0.85;
+  u.pitch = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const zh = voices.find(v => v.lang.startsWith('zh'));
+  if (zh) u.voice = zh;
+  const btn = document.getElementById('speak-btn-main');
+  if (btn) { btn.classList.add('speaking'); u.onend = () => btn.classList.remove('speaking'); }
+  window.speechSynthesis.speak(u);
+}
+
 function typeTag(type) {
   return `<span class="card-tag tag-${type}">${type}</span>`;
 }
@@ -603,7 +654,8 @@ function renderCard() {
     ${typeTag(c.type)}
     <div class="card-chinese">${c.ch}</div>
     <div class="card-pinyin">${c.py}</div>
-    <div class="card-hint">tap to reveal</div>`;
+    <button class="speak-btn" id="speak-btn-main" onclick="event.stopPropagation();speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button>
+    <div class="card-hint" style="margin-top:0.5rem;">tap card to reveal</div>`;
   document.getElementById('back-face').innerHTML = `
     ${typeTag(c.type)}
     <div class="card-english">${c.en}</div>
@@ -657,6 +709,7 @@ function renderQuiz() {
       ${typeTag(c.type)}
       <div class="card-chinese" style="font-size:32px;margin:0.5rem 0;">${c.ch}</div>
       <div class="card-pinyin">${c.py}</div>
+      <button class="quiz-speak" onclick="speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button>
       <div style="font-size:12px;color:var(--text3);margin-top:0.75rem;">${quizIdx + 1} / ${quizCards.length} · ✓ ${quizScore}</div>
     </div>
     <div class="quiz-options">
@@ -680,6 +733,7 @@ function checkAnswer(btn, chosen, correct) {
   document.getElementById('next-q-btn').style.display = '';
 }
 
+if (window.speechSynthesis) window.speechSynthesis.getVoices();
 buildTabs();
 loadDeck();
 </script>
