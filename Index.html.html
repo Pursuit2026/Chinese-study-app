@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chinese Study App</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #e2ddd4;
+    --text: #1a1814;
+    --text2: #6b6560;
+    --text3: #a09890;
+    --teal: #0f6e56;
+    --teal-light: #e1f5ee;
+    --teal-mid: #1D9E75;
+    --blue: #185FA5;
+    --blue-light: #e6f1fb;
+    --purple: #534AB7;
+    --purple-light: #eeedfe;
+    --amber: #854F0B;
+    --amber-light: #faeeda;
+    --red: #A32D2D;
+    --red-light: #fcebeb;
+    --green-light: #EAF3DE;
+    --green: #3B6D11;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--teal);
+    font-family: 'Noto Sans SC', sans-serif;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span {
+    color: var(--text2);
+    font-weight: 400;
+    font-size: 14px;
+    margin-left: 8px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .main {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+
+  /* Tabs */
+  .tabs-wrap {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .tab {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .tab:hover:not(.active) { background: var(--surface2); }
+  .tab.active {
+    background: var(--teal);
+    color: white;
+    border-color: var(--teal);
+    font-weight: 500;
+  }
+
+  /* Controls bar */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .mode-btn {
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .mode-btn.active {
+    background: var(--text);
+    color: white;
+    border-color: var(--text);
+  }
+
+  .shuffle-btn {
+    margin-left: auto;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .shuffle-btn:hover { background: var(--surface2); }
+
+  .score-badge {
+    font-size: 13px;
+    color: var(--text2);
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  /* Progress bar */
+  .progress {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--teal-mid);
+    border-radius: 2px;
+    transition: width 0.35s ease;
+  }
+
+  /* Flashcard */
+  .card-scene {
+    perspective: 900px;
+    width: 100%;
+    height: 240px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card.flipped { transform: rotateY(180deg); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.75rem;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .front { background: var(--surface); }
+  .back {
+    background: var(--surface2);
+    transform: rotateY(180deg);
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-vocab { background: var(--teal-light); color: var(--teal); }
+  .tag-sentence { background: var(--blue-light); color: var(--blue); }
+  .tag-phrase { background: var(--purple-light); color: var(--purple); }
+
+  .card-chinese {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .card-pinyin {
+    font-size: 16px;
+    color: var(--teal);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .card-hint {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 1rem;
+  }
+
+  .card-english {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-note {
+    font-size: 13px;
+    color: var(--text2);
+    text-align: center;
+    background: var(--amber-light);
+    color: var(--amber);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    margin-top: 0.75rem;
+  }
+
+  .card-sub {
+    font-size: 13px;
+    color: var(--text3);
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+
+  /* Nav buttons */
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .nav-btn {
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: var(--surface);
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .nav-btn:hover:not(:disabled) { background: var(--surface2); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .counter {
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  /* Quiz */
+  .quiz-question {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .quiz-opt {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+
+  .quiz-opt:hover:not(:disabled) { background: var(--surface2); border-color: #c8c3bb; }
+  .quiz-opt.correct { background: var(--green-light); border-color: var(--green); color: var(--green); font-weight: 500; }
+  .quiz-opt.wrong { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .quiz-opt:disabled { cursor: default; }
+
+  .done-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+
+  .done-icon { font-size: 48px; margin-bottom: 1rem; }
+  .done-score { font-size: 28px; font-weight: 600; margin-bottom: 0.5rem; }
+  .done-pct { font-size: 15px; color: var(--text2); margin-bottom: 1.5rem; }
+
+  .retry-btn {
+    padding: 10px 28px;
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.15s;
+  }
+
+  .retry-btn:hover { opacity: 0.85; }
+
+  @media (max-width: 480px) {
+    .card-chinese { font-size: 30px; }
+    .card-scene { height: 200px; }
+    .quiz-options { grid-template-columns: 1fr; }
+    .card-english { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">学中文 <span>Chinese Study App</span></div>
+</header>
+
+<div class="main">
+  <div class="tabs-wrap" id="tabs"></div>
+
+  <div class="controls">
+    <button class="mode-btn active" id="btn-flash" onclick="setMode('flash')">Flashcards</button>
+    <button class="mode-btn" id="btn-quiz" onclick="setMode('quiz')">Quiz</button>
+    <button class="shuffle-btn" onclick="shuffle()">⇄ Shuffle</button>
+    <span class="score-badge" id="score-display" style="display:none;"></span>
+  </div>
+
+  <div class="progress"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+  <!-- Flashcard view -->
+  <div id="flash-view">
+    <div class="card-scene" onclick="flip()">
+      <div class="card" id="card">
+        <div class="face front" id="front-face"></div>
+        <div class="face back" id="back-face"></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="prev()">← Prev</button>
+      <span class="counter" id="counter"></span>
+      <button class="nav-btn" onclick="next()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Quiz view -->
+  <div id="quiz-view" style="display:none;">
+    <div id="quiz-body"></div>
+  </div>
+</div>
+
+<script>
+const DECKS = {
+  "Small Talk": [
+    {ch:"吃了吗？",py:"Chī le ma?",en:"Have you eaten?",type:"vocab"},
+    {ch:"什么",py:"Shénme",en:"What",type:"vocab"},
+    {ch:"今天",py:"Jīntiān",en:"Today",type:"vocab"},
+    {ch:"天气",py:"Tiānqì",en:"Weather",type:"vocab"},
+    {ch:"怎样",py:"Zěnyàng",en:"How / In what way",type:"vocab"},
+    {ch:"散步",py:"Sànbù",en:"To take a walk",type:"vocab"},
+    {ch:"您吃了吗？",py:"Nín chī le ma?",en:"Have you eaten? (polite)",type:"sentence"},
+    {ch:"吃什么了？",py:"Chī shénme le?",en:"What did you eat?",type:"sentence"},
+    {ch:"您散步吗？",py:"Nín sànbù ma?",en:"Are you going for a walk?",type:"sentence"},
+    {ch:"今天天气怎样？",py:"Jīntiān tiānqì zěnyàng?",en:"How is the weather today?",type:"sentence"},
+  ],
+  "Chinese New Year": [
+    {ch:"新年",py:"xīnnián",en:"New Year",type:"vocab"},
+    {ch:"春节",py:"chūnjié",en:"Spring Festival",type:"vocab"},
+    {ch:"过年",py:"guònián",en:"To celebrate the New Year",type:"vocab"},
+    {ch:"快乐",py:"kuàilè",en:"Happy",type:"vocab"},
+    {ch:"恭喜",py:"gōngxǐ",en:"Congratulations",type:"vocab"},
+    {ch:"发财",py:"fācái",en:"To get rich / make a fortune",type:"vocab"},
+    {ch:"福",py:"fú",en:"Blessing / Fortune",type:"vocab"},
+    {ch:"马",py:"mǎ",en:"Horse (zodiac animal 2026)",type:"vocab"},
+    {ch:"马上",py:"mǎshàng",en:"Immediately (lit. on a horse)",type:"vocab"},
+    {ch:"成功",py:"chénggōng",en:"Success",type:"vocab"},
+    {ch:"新年快乐！",py:"Xīnnián kuàilè!",en:"Happy New Year!",type:"sentence",note:"Universal greeting"},
+    {ch:"恭喜发财！",py:"Gōngxǐ fācái!",en:"Wishing you prosperity and wealth!",type:"sentence",note:"Cup hands while saying this"},
+    {ch:"大吉大利！",py:"Dàjí dàlì!",en:"Great luck and great prosperity!",type:"sentence"},
+    {ch:"年年有余。",py:"Niánnián yǒuyú.",en:"May you have abundance every year.",type:"sentence",note:"Pun: yu = surplus & fish"},
+    {ch:"马到成功！",py:"Mǎdàochénggōng!",en:"Instant success!",type:"sentence",note:"Idiom: success as the horse arrives"},
+  ],
+  "Lantern Festival": [
+    {ch:"正月",py:"zhēngyuè",en:"First lunar month",type:"vocab"},
+    {ch:"元宵",py:"yuánxiāo",en:"Sweet rice balls / Lantern Festival",type:"vocab"},
+    {ch:"圆",py:"yuán",en:"Round / Full",type:"vocab"},
+    {ch:"汤圆",py:"tāngyuán",en:"Soup balls (southern term)",type:"vocab"},
+    {ch:"圆满",py:"yuánmǎn",en:"Successful / Perfect",type:"vocab"},
+    {ch:"团团圆圆",py:"tuántuán yuányuán",en:"Family reunion (reduplicated word)",type:"vocab"},
+    {ch:"元宵节快乐！",py:"Yuánxiāojié kuàilè!",en:"Happy Lantern Festival!",type:"sentence"},
+    {ch:"我们吃汤圆。",py:"Wǒmen chī tāngyuán.",en:"We eat soup balls.",type:"sentence"},
+    {ch:"祝你们全家团团圆圆。",py:"Zhù nǐmen quánjiā tuántuán yuányuán.",en:"Wish your whole family a happy reunion.",type:"sentence"},
+    {ch:"正月十五月儿圆。",py:"Zhēngyuè shíwǔ yuè'ér yuán.",en:"The moon is round on the 15th.",type:"sentence"},
+  ],
+  "Weather": [
+    {ch:"天气",py:"tiānqì",en:"Weather",type:"vocab"},
+    {ch:"晴天",py:"qíngtiān",en:"Sunny day",type:"vocab"},
+    {ch:"阴天",py:"yīntiān",en:"Cloudy day",type:"vocab"},
+    {ch:"下雨",py:"xiàyǔ",en:"To rain",type:"vocab"},
+    {ch:"下雪",py:"xiàxuě",en:"To snow",type:"vocab"},
+    {ch:"刮风",py:"guāfēng",en:"To be windy",type:"vocab"},
+    {ch:"冷",py:"lěng",en:"Cold",type:"vocab"},
+    {ch:"热",py:"rè",en:"Hot",type:"vocab"},
+    {ch:"很",py:"hěn",en:"Very",type:"vocab"},
+    {ch:"今天天气怎么样？",py:"Jīntiān tiānqì zěnmeyàng?",en:"How is the weather today?",type:"sentence"},
+    {ch:"今天天气很好。",py:"Jīntiān tiānqì hěn hǎo.",en:"Today's weather is very good.",type:"sentence"},
+    {ch:"现在在下雨。",py:"Xiànzài zài xiàyǔ.",en:"It is raining right now.",type:"sentence"},
+    {ch:"明天会下雪。",py:"Míngtiān huì xiàxuě.",en:"It will snow tomorrow.",type:"sentence"},
+    {ch:"太热了！",py:"Tài rè le!",en:"It's too hot!",type:"sentence"},
+  ],
+  "Spring": [
+    {ch:"暖和",py:"nuǎn huo",en:"Warm",type:"vocab"},
+    {ch:"春天",py:"chūn tiān",en:"Spring",type:"vocab"},
+    {ch:"花",py:"huā",en:"Flower",type:"vocab"},
+    {ch:"花开了",py:"huā kāi le",en:"Flowers bloom",type:"phrase"},
+    {ch:"鸟",py:"niǎo",en:"Bird",type:"vocab"},
+    {ch:"鸟叫",py:"niǎo jiào",en:"Birds chirping",type:"vocab"},
+    {ch:"春暖花开",py:"chūn nuǎn huā kāi",en:"Warm spring and blooming flowers",type:"phrase"},
+    {ch:"鸟语花香",py:"niǎo yǔ huā xiāng",en:"Birds singing and flowers fragrant",type:"phrase"},
+    {ch:"今天天气真暖和。",py:"jīntiān tiānqì zhēn nuǎn huo",en:"The weather is really warm today.",type:"sentence"},
+    {ch:"春天来了。",py:"chūntiān lái le",en:"Spring has arrived.",type:"sentence"},
+    {ch:"你看，花开了。",py:"nǐ kàn, huā kāi le",en:"Look, the flowers have bloomed.",type:"sentence"},
+    {ch:"你听，鸟在叫。",py:"nǐ tīng, niǎo zài jiào",en:"Listen, the birds are chirping.",type:"sentence"},
+    {ch:"春天真是鸟语花香。",py:"chūntiān zhēn shì niǎo yǔ huā xiāng",en:"Spring is full of birds singing and flowers blooming.",type:"sentence"},
+  ],
+  "Spring Break": [
+    {ch:"春假",py:"chūn jià",en:"Spring break",type:"vocab"},
+    {ch:"飞机",py:"fēi jī",en:"Airplane",type:"vocab"},
+    {ch:"火车",py:"huǒ chē",en:"Train",type:"vocab"},
+    {ch:"旅馆",py:"lǚ guǎn",en:"Hotel",type:"vocab"},
+    {ch:"朋友",py:"péng you",en:"Friend",type:"vocab"},
+    {ch:"遇到",py:"yù dào",en:"To meet by chance",type:"vocab"},
+    {ch:"世界",py:"shì jiè",en:"World",type:"vocab"},
+    {ch:"坐飞机",py:"zuò fēi jī",en:"Travel by plane",type:"phrase"},
+    {ch:"坐火车",py:"zuò huǒ chē",en:"Travel by train",type:"phrase"},
+    {ch:"住旅馆",py:"zhù lǚ guǎn",en:"Stay at a hotel",type:"phrase"},
+    {ch:"和朋友一起",py:"hé péng you yì qǐ",en:"Together with friends",type:"phrase"},
+    {ch:"遇到老朋友",py:"yù dào lǎo péng you",en:"Meet an old friend",type:"phrase"},
+    {ch:"这世界真小！",py:"zhè shì jiè zhēn xiǎo!",en:"It's a small world!",type:"sentence"},
+    {ch:"好玩吗？",py:"Hǎo wán ma?",en:"Was it fun?",type:"sentence"},
+    {ch:"春假我和朋友一起坐飞机去了波多黎各。",py:"Chūn jià wǒ hé péng you yì qǐ zuò fēi jī qù le.",en:"I flew to Puerto Rico with friends during spring break.",type:"sentence"},
+  ],
+  "Airport": [
+    {ch:"机场",py:"jī chǎng",en:"Airport",type:"vocab"},
+    {ch:"海关",py:"hǎi guān",en:"Customs",type:"vocab"},
+    {ch:"排队",py:"pái duì",en:"To line up",type:"vocab"},
+    {ch:"行李",py:"xíng li",en:"Luggage",type:"vocab"},
+    {ch:"打车",py:"dǎ chē",en:"Take a taxi (colloquial)",type:"vocab"},
+    {ch:"游客",py:"yóu kè",en:"Tourist",type:"vocab"},
+    {ch:"拥挤",py:"yōng jǐ",en:"Crowded",type:"vocab"},
+    {ch:"过海关",py:"guò hǎi guān",en:"Go through customs",type:"phrase"},
+    {ch:"排队等候",py:"pái duì děng hòu",en:"Wait in line",type:"phrase"},
+    {ch:"带行李",py:"dài xíng li",en:"Carry luggage",type:"phrase"},
+    {ch:"机场有很多游客。",py:"jī chǎng yǒu hěn duō yóu kè",en:"There are many tourists at the airport.",type:"sentence"},
+    {ch:"我在机场排队等候。",py:"wǒ zài jī chǎng pái duì děng hòu",en:"I am waiting in line at the airport.",type:"sentence"},
+    {ch:"机场非常拥挤。",py:"jī chǎng fēi cháng yōng jǐ",en:"The airport is very crowded.",type:"sentence"},
+    {ch:"我过了海关以后打车去酒店。",py:"wǒ guò le hǎi guān yǐ hòu dǎ dī qù jiǔ diàn",en:"After customs, I take a taxi to the hotel.",type:"sentence"},
+  ],
+};
+
+let currentDeck = "Small Talk";
+let cards = [];
+let idx = 0;
+let flipped = false;
+let mode = "flash";
+let quizCards = [];
+let quizIdx = 0;
+let quizScore = 0;
+let quizTotal = 0;
+let quizAnswered = false;
+
+function typeTag(type) {
+  return `<span class="card-tag tag-${type}">${type}</span>`;
+}
+
+function buildTabs() {
+  const cont = document.getElementById('tabs');
+  cont.innerHTML = '';
+  Object.keys(DECKS).forEach(name => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (name === currentDeck ? ' active' : '');
+    b.textContent = name;
+    b.onclick = () => { currentDeck = name; buildTabs(); loadDeck(); };
+    cont.appendChild(b);
+  });
+}
+
+function loadDeck() {
+  cards = [...DECKS[currentDeck]];
+  idx = 0; flipped = false;
+  quizScore = 0; quizTotal = 0;
+  hideScore();
+  if (mode === 'flash') renderCard();
+  else startQuiz();
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-flash').classList.toggle('active', m === 'flash');
+  document.getElementById('btn-quiz').classList.toggle('active', m === 'quiz');
+  document.getElementById('flash-view').style.display = m === 'flash' ? '' : 'none';
+  document.getElementById('quiz-view').style.display = m === 'quiz' ? '' : 'none';
+  hideScore();
+  if (m === 'flash') renderCard();
+  else startQuiz();
+}
+
+function shuffle() {
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+  idx = 0; flipped = false;
+  if (mode === 'flash') renderCard();
+  else { quizCards = [...cards]; quizIdx = 0; quizScore = 0; quizTotal = 0; hideScore(); renderQuiz(); }
+}
+
+function hideScore() {
+  const s = document.getElementById('score-display');
+  s.style.display = 'none'; s.textContent = '';
+}
+
+function showScore(text) {
+  const s = document.getElementById('score-display');
+  s.style.display = ''; s.textContent = text;
+}
+
+function renderCard() {
+  if (!cards.length) return;
+  const c = cards[idx];
+  flipped = false;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('front-face').innerHTML = `
+    ${typeTag(c.type)}
+    <div class="card-chinese">${c.ch}</div>
+    <div class="card-pinyin">${c.py}</div>
+    <div class="card-hint">tap to reveal</div>`;
+  document.getElementById('back-face').innerHTML = `
+    ${typeTag(c.type)}
+    <div class="card-english">${c.en}</div>
+    ${c.note ? `<div class="card-note">💡 ${c.note}</div>` : ''}
+    <div class="card-sub">${c.ch} · ${c.py}</div>`;
+  document.getElementById('counter').textContent = `${idx + 1} / ${cards.length}`;
+  document.getElementById('prog').style.width = `${((idx + 1) / cards.length) * 100}%`;
+}
+
+function flip() {
+  flipped = !flipped;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+}
+
+function next() { if (idx < cards.length - 1) { idx++; renderCard(); } }
+function prev() { if (idx > 0) { idx--; renderCard(); } }
+
+function startQuiz() {
+  quizCards = [...cards].sort(() => Math.random() - 0.5);
+  quizIdx = 0; quizScore = 0; quizTotal = 0; quizAnswered = false;
+  hideScore();
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const body = document.getElementById('quiz-body');
+  if (quizIdx >= quizCards.length) {
+    const pct = Math.round(quizScore / quizTotal * 100);
+    body.innerHTML = `
+      <div class="done-card">
+        <div class="done-icon">${pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '📚'}</div>
+        <div class="done-score">${quizScore} / ${quizTotal}</div>
+        <div class="done-pct">${pct}% correct</div>
+        <button class="retry-btn" onclick="startQuiz()">Try again</button>
+      </div>`;
+    showScore(`${quizScore}/${quizTotal}`);
+    document.getElementById('prog').style.width = '100%';
+    return;
+  }
+
+  const c = quizCards[quizIdx];
+  quizAnswered = false;
+  document.getElementById('prog').style.width = `${((quizIdx + 1) / quizCards.length) * 100}%`;
+
+  const allCards = DECKS[currentDeck];
+  const wrong = allCards.filter(x => x.en !== c.en).sort(() => Math.random() - 0.5).slice(0, 3);
+  const opts = [...wrong, c].sort(() => Math.random() - 0.5);
+
+  body.innerHTML = `
+    <div class="quiz-question">
+      ${typeTag(c.type)}
+      <div class="card-chinese" style="font-size:32px;margin:0.5rem 0;">${c.ch}</div>
+      <div class="card-pinyin">${c.py}</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:0.75rem;">${quizIdx + 1} / ${quizCards.length} · ✓ ${quizScore}</div>
+    </div>
+    <div class="quiz-options">
+      ${opts.map(o => `<button class="quiz-opt" onclick="checkAnswer(this,'${o.en.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${c.en.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${o.en}</button>`).join('')}
+    </div>
+    <div style="text-align:right;">
+      <button class="nav-btn" id="next-q-btn" onclick="quizIdx++;renderQuiz();" style="display:none;">Next →</button>
+    </div>`;
+}
+
+function checkAnswer(btn, chosen, correct) {
+  if (quizAnswered) return;
+  quizAnswered = true; quizTotal++;
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === correct) b.classList.add('correct');
+  });
+  if (chosen === correct) { quizScore++; btn.classList.add('correct'); }
+  else btn.classList.add('wrong');
+  showScore(`${quizScore}/${quizTotal}`);
+  document.getElementById('next-q-btn').style.display = '';
+}
+
+buildTabs();
+loadDeck();
+</script>
+</body>
+</html>
