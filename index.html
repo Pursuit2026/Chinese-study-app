@@ -25,9 +25,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.875rem 1.5rem; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
 .logo { font-size: 20px; font-weight: 700; color: var(--teal); font-family: 'Noto Sans SC', sans-serif; }
 .logo span { color: var(--text2); font-weight: 400; font-size: 13px; margin-left: 8px; font-family: 'DM Sans', sans-serif; }
-.teacher-btn { margin-left: auto; padding: 5px 14px; border: 1px solid var(--border); border-radius: 100px; font-size: 12px; cursor: pointer; background: transparent; color: var(--text2); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.teacher-btn { padding: 5px 14px; border: 1px solid var(--border); border-radius: 100px; font-size: 12px; cursor: pointer; background: transparent; color: var(--text2); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .teacher-btn:hover { background: var(--surface2); }
 .teacher-btn.active { background: var(--teal); color: white; border-color: var(--teal); }
+.clear-btn { padding: 5px 12px; border: 1px solid var(--red-light); border-radius: 100px; font-size: 11px; cursor: pointer; background: transparent; color: var(--red); font-family: 'DM Sans', sans-serif; transition: all 0.15s; display: none; }
+.clear-btn:hover { background: var(--red-light); }
+.teacher-mode .clear-btn { display: inline-block; }
 .main { max-width: 700px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; width: 100%; }
 
 /* Sidebar */
@@ -37,7 +41,7 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .sb-add-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 15px; color: var(--text2); display: flex; align-items: center; justify-content: center; line-height: 1; transition: all 0.15s; }
 .sb-add-btn:hover { background: var(--teal); color: white; border-color: var(--teal); }
 
-/* Student name entry (student view) */
+/* Student name bar */
 .name-entry-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .name-entry-bar input { flex: 1; min-width: 160px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); outline: none; }
 .name-entry-bar input:focus { border-color: var(--teal); }
@@ -70,7 +74,7 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .sub-badge { font-size: 10px; padding: 2px 7px; border-radius: 100px; background: var(--green-light); color: var(--green); font-weight: 500; white-space: nowrap; }
 .sub-badge.pending { background: var(--amber-light); color: var(--amber); }
 
-/* Checkbox list for assigning students */
+/* Assign checklist */
 .assign-list { max-height: 180px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 12px; }
 .assign-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--border); cursor: pointer; }
 .assign-item:last-child { border-bottom: none; }
@@ -84,16 +88,19 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .submit-banner { background: var(--blue-light); border: 1px solid #b5d4f4; border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .submit-banner-title { font-weight: 500; font-size: 14px; color: var(--blue); margin-bottom: 2px; }
 .submit-banner-text { font-size: 12px; color: var(--blue); }
-.submit-banner-assigned { font-size: 11px; color: var(--purple); margin-top: 2px; }
 .submit-hw-btn { padding: 7px 16px; background: var(--blue); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; white-space: nowrap; }
 .submit-hw-btn:hover { opacity: 0.85; }
 
-/* Submissions in sidebar */
+/* Submissions */
 .sub-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; }
 .sub-item-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
 .sub-item-meta { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
 .view-file-btn { font-size: 12px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--blue); cursor: pointer; font-family: 'DM Sans', sans-serif; }
 .view-file-btn:hover { background: var(--blue-light); }
+
+/* Saved indicator */
+.saved-pill { font-size: 11px; color: var(--green); background: var(--green-light); padding: 3px 10px; border-radius: 100px; opacity: 0; transition: opacity 0.4s; }
+.saved-pill.show { opacity: 1; }
 
 /* Modal */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
@@ -115,14 +122,11 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .sb-btn.ghost { background: transparent; color: var(--text2); }
 .sb-btn.ghost:hover { background: var(--surface2); }
 
-/* Audio player */
-.audio-player { width: 100%; margin-top: 8px; border-radius: var(--radius-sm); }
-
 /* Teacher-only */
 .teacher-only-section { display: none; }
 .teacher-mode .teacher-only-section { display: block; }
 
-/* Tabs */
+/* Tabs & flashcard */
 .tabs-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
 .tab { padding: 6px 14px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; cursor: pointer; background: transparent; color: var(--text2); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .tab:hover:not(.active) { background: var(--surface2); }
@@ -176,6 +180,7 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .empty-hw { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; margin-bottom: 1.25rem; }
 .empty-hw-icon { font-size: 32px; margin-bottom: 0.5rem; }
 .empty-hw-text { font-size: 14px; color: var(--text2); }
+audio { width: 100%; border-radius: 8px; margin-top: 8px; }
 
 @media (max-width: 640px) {
   .sidebar { width: 100%; min-width: unset; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
@@ -196,13 +201,11 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
     <label class="modal-label">Due date</label>
     <input class="modal-input" type="date" id="hw-date" />
     <label class="modal-label">Assign to students</label>
-    <div class="assign-list" id="assign-list">
-      <div style="padding:10px;font-size:12px;color:var(--text3);">Add students first to assign homework.</div>
-    </div>
-    <label class="modal-label">Upload file (PDF, image, Word, audio)</label>
+    <div class="assign-list" id="assign-list"><div style="padding:10px;font-size:12px;color:var(--text3);">Add students first.</div></div>
+    <label class="modal-label">Upload file (PDF, image, Word, voice memo)</label>
     <div class="file-drop" id="hw-drop" onclick="document.getElementById('hw-file').click()">
       <div class="file-drop-text">Click to upload or drag &amp; drop</div>
-      <div class="file-drop-hint">PDF, Word, image, voice memo (.m4a, .mp3) accepted</div>
+      <div class="file-drop-hint">PDF, Word, image, voice memo (.m4a, .mp3, .wav) accepted</div>
       <div class="file-chosen" id="hw-chosen"></div>
     </div>
     <input type="file" id="hw-file" style="display:none;" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.mp3,.m4a,.wav,.aac,.ogg,.webm" onchange="hwFileChosen(this)" />
@@ -258,6 +261,18 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
   </div>
 </div>
 
+<!-- Confirm Clear Modal -->
+<div class="modal-overlay" id="clear-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-title">Clear all data?</div>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;">This will permanently delete all students, homework assignments, and submissions. This cannot be undone.</p>
+    <div class="modal-row">
+      <button class="sb-btn ghost" onclick="closeModal('clear-modal')">Cancel</button>
+      <button class="sb-btn" style="background:var(--red);color:white;border-color:var(--red);" onclick="clearAllData()">Yes, clear everything</button>
+    </div>
+  </div>
+</div>
+
 <div class="layout" id="app-layout">
   <aside class="sidebar">
     <div class="sb-section">
@@ -283,16 +298,18 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
   <div class="content">
     <header>
       <div class="logo">学中文 <span>Chinese Study App</span></div>
-      <button class="teacher-btn" id="teacher-toggle" onclick="toggleTeacher()">Teacher mode</button>
+      <div class="header-right">
+        <span class="saved-pill" id="saved-pill">✓ Saved</span>
+        <button class="teacher-btn" id="teacher-toggle" onclick="toggleTeacher()">Teacher mode</button>
+        <button class="clear-btn" onclick="openModal('clear-modal')">Clear all data</button>
+      </div>
     </header>
     <div class="main">
-      <!-- Student name entry bar -->
       <div id="name-bar" class="name-entry-bar">
         <span class="name-entry-label">Your name:</span>
         <input id="name-input" placeholder="Enter your name to see your homework" onkeydown="if(event.key==='Enter')confirmName()" />
         <button class="name-confirm-btn" onclick="confirmName()">Go</button>
       </div>
-      <!-- Homework banners for student -->
       <div id="hw-banner"></div>
       <div class="tabs-wrap" id="tabs"></div>
       <div class="controls">
@@ -429,35 +446,67 @@ const DECKS = {
   ],
 };
 
-// State
+// ── State ──────────────────────────────────────────────────────────────────
 let currentDeck="Small Talk", cards=[], idx=0, flipped=false;
 let mode="flash", quizCards=[], quizIdx=0, quizScore=0, quizTotal=0, quizAnswered=false;
-let isTeacher=false;
+let isTeacher=false, studentName='';
 let homeworks=[], students=[], submissions=[];
 let editingStudentId=null, currentHwFile=null, currentSubmitFile=null, currentSubmitData=null, currentSubmitHwId=null;
-let studentName=''; // active student name
 
-const AUDIO_TYPES = ['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm','video/mp4'];
-function isAudio(type){ return type && (AUDIO_TYPES.includes(type) || type.startsWith('audio/')); }
-function isImage(type){ return type && type.startsWith('image/'); }
-function isPdf(type){ return type === 'application/pdf'; }
+// ── Local Storage ──────────────────────────────────────────────────────────
+const LS_KEYS = { students:'csa_students', homeworks:'csa_homeworks', submissions:'csa_submissions' };
+let saveTimer=null;
 
-// ── Student name ──────────────────────────────────────────────────────────
+function lsSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    try {
+      localStorage.setItem(LS_KEYS.students, JSON.stringify(students));
+      localStorage.setItem(LS_KEYS.homeworks, JSON.stringify(homeworks));
+      localStorage.setItem(LS_KEYS.submissions, JSON.stringify(submissions));
+      flashSaved();
+    } catch(e) {
+      console.warn('Storage full or unavailable:', e);
+    }
+  }, 300);
+}
+
+function lsLoad(){
+  try {
+    const s=localStorage.getItem(LS_KEYS.students);
+    const h=localStorage.getItem(LS_KEYS.homeworks);
+    const sub=localStorage.getItem(LS_KEYS.submissions);
+    if(s) students=JSON.parse(s);
+    if(h) homeworks=JSON.parse(h);
+    if(sub) submissions=JSON.parse(sub);
+  } catch(e){ console.warn('Could not load saved data:', e); }
+}
+
+function flashSaved(){
+  const pill=document.getElementById('saved-pill');
+  pill.classList.add('show');
+  setTimeout(()=>pill.classList.remove('show'), 2000);
+}
+
+function clearAllData(){
+  students=[]; homeworks=[]; submissions=[];
+  localStorage.removeItem(LS_KEYS.students);
+  localStorage.removeItem(LS_KEYS.homeworks);
+  localStorage.removeItem(LS_KEYS.submissions);
+  renderHwList(); renderHwBanner(); renderStudentList(); renderSubmissions();
+  closeModal('clear-modal');
+}
+
+// ── Student name ───────────────────────────────────────────────────────────
 function confirmName(){
-  const val = document.getElementById('name-input').value.trim();
-  if(!val) return;
-  studentName = val;
-  const bar = document.getElementById('name-bar');
-  bar.innerHTML = `<span class="name-entry-label">Viewing as:</span>
-    <span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
+  const val=document.getElementById('name-input').value.trim(); if(!val)return;
+  studentName=val;
+  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
   renderHwBanner();
 }
 function clearName(){
   studentName='';
-  document.getElementById('name-bar').innerHTML = `
-    <span class="name-entry-label">Your name:</span>
-    <input id="name-input" placeholder="Enter your name to see your homework" onkeydown="if(event.key==='Enter')confirmName()" />
-    <button class="name-confirm-btn" onclick="confirmName()">Go</button>`;
+  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Your name:</span><input id="name-input" placeholder="Enter your name to see your homework" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button>`;
   renderHwBanner();
 }
 
@@ -470,8 +519,7 @@ function toggleTeacher(){
   document.getElementById('app-layout').classList.toggle('teacher-mode',isTeacher);
   document.getElementById('hw-add-btn').style.display=isTeacher?'flex':'none';
   document.getElementById('name-bar').style.display=isTeacher?'none':'';
-  renderHwBanner();
-  renderHwList();
+  renderHwBanner(); renderHwList();
 }
 
 // ── Modals ─────────────────────────────────────────────────────────────────
@@ -479,40 +527,22 @@ function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 function openHwModal(){
-  // Build assign checklist
-  const list = document.getElementById('assign-list');
+  const list=document.getElementById('assign-list');
   if(!students.length){
     list.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Add students first to assign homework.</div>';
   } else {
-    list.innerHTML = `<div class="assign-all-row">
-      <input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" />
-      <label for="assign-all">Select all students</label>
-    </div>` + students.map(s=>`
-      <div class="assign-item">
-        <input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" />
-        <label for="assign-${s.id}">${s.name}</label>
-      </div>`).join('');
+    list.innerHTML=`<div class="assign-all-row"><input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" /><label for="assign-all">Select all students</label></div>`
+      +students.map(s=>`<div class="assign-item"><input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" /><label for="assign-${s.id}">${s.name}</label></div>`).join('');
   }
   openModal('hw-modal');
 }
-
-function toggleAssignAll(cb){
-  document.querySelectorAll('.assign-cb').forEach(c=>c.checked=cb.checked);
-}
-function updateAssignAll(){
-  const cbs=[...document.querySelectorAll('.assign-cb')];
-  document.getElementById('assign-all').checked = cbs.length && cbs.every(c=>c.checked);
-}
-function getAssignedIds(){
-  return [...document.querySelectorAll('.assign-cb:checked')].map(c=>parseInt(c.value));
-}
+function toggleAssignAll(cb){ document.querySelectorAll('.assign-cb').forEach(c=>c.checked=cb.checked); }
+function updateAssignAll(){ const cbs=[...document.querySelectorAll('.assign-cb')]; const aa=document.getElementById('assign-all'); if(aa) aa.checked=cbs.length&&cbs.every(c=>c.checked); }
+function getAssignedIds(){ return [...document.querySelectorAll('.assign-cb:checked')].map(c=>parseInt(c.value)); }
 
 // ── Homework ───────────────────────────────────────────────────────────────
-function hwFileChosen(input){
-  const f=input.files[0]; if(!f)return;
-  currentHwFile=f;
-  document.getElementById('hw-chosen').textContent='📎 '+f.name;
-}
+function hwFileChosen(input){ const f=input.files[0]; if(!f)return; currentHwFile=f; document.getElementById('hw-chosen').textContent='📎 '+f.name; }
+
 function saveHomework(){
   const title=document.getElementById('hw-title').value.trim();
   const date=document.getElementById('hw-date').value;
@@ -527,17 +557,20 @@ function saveHomework(){
   } else { homeworks.push(hw); finishHw(); }
 }
 function finishHw(){
-  renderHwList(); renderHwBanner(); closeModal('hw-modal');
+  lsSave(); renderHwList(); renderHwBanner(); closeModal('hw-modal');
   ['hw-title','hw-date','hw-link'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('hw-chosen').textContent='';
-  document.getElementById('hw-file').value='';
-  currentHwFile=null;
+  document.getElementById('hw-chosen').textContent=''; document.getElementById('hw-file').value=''; currentHwFile=null;
 }
-function deleteHw(id){ homeworks=homeworks.filter(h=>h.id!==id); renderHwList(); renderHwBanner(); }
+function deleteHw(id){ homeworks=homeworks.filter(h=>h.id!==id); lsSave(); renderHwList(); renderHwBanner(); }
 
 function getAssignedNames(hw){
   if(!hw.assignedIds||!hw.assignedIds.length) return 'All students';
   return hw.assignedIds.map(id=>{ const s=students.find(s=>s.id===id); return s?s.name:''; }).filter(Boolean).join(', ');
+}
+function isAssignedToStudent(hw,name){
+  if(!name) return false;
+  if(!hw.assignedIds||!hw.assignedIds.length) return true;
+  return hw.assignedIds.some(id=>{ const s=students.find(s=>s.id===id); return s&&s.name.toLowerCase()===name.toLowerCase(); });
 }
 
 function renderHwList(){
@@ -556,19 +589,10 @@ function renderHwList(){
     </div>`).join('');
 }
 
-function isAssignedToStudent(hw, name){
-  if(!name) return false;
-  if(!hw.assignedIds||!hw.assignedIds.length) return true; // assigned to all
-  return hw.assignedIds.some(id=>{ const s=students.find(s=>s.id===id); return s&&s.name.toLowerCase()===name.toLowerCase(); });
-}
-
 function renderHwBanner(){
   const el=document.getElementById('hw-banner');
   if(isTeacher){ el.innerHTML=''; return; }
-  if(!studentName){
-    el.innerHTML='';
-    return;
-  }
+  if(!studentName){ el.innerHTML=''; return; }
   const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,studentName));
   if(!myHw.length){
     el.innerHTML=`<div class="empty-hw"><div class="empty-hw-icon">📭</div><div class="empty-hw-text">No homework assigned to <strong>${studentName}</strong> yet.</div></div>`;
@@ -576,45 +600,28 @@ function renderHwBanner(){
   }
   el.innerHTML=myHw.map(hw=>`
     <div class="submit-banner">
-      <div>
+      <div style="flex:1;">
         <div class="submit-banner-title">📋 ${hw.title}</div>
         ${hw.date?`<div class="submit-banner-text">Due: ${fmtDate(hw.date)}</div>`:''}
-        ${hw.fileData?`<div style="margin-top:4px;">${renderInlineFile(hw)}</div>`:''}
-        ${hw.link?`<div style="margin-top:4px;"><a class="hw-link" href="${hw.link}" target="_blank" style="font-size:12px;">Open assignment link</a></div>`:''}
+        ${hw.fileData&&isAudio(hw.fileType)?`<audio controls src="${hw.fileData}"></audio>`:''}
+        ${hw.fileData&&!isAudio(hw.fileType)?`<button class="hw-link" style="margin-top:6px;" onclick="viewFile(${hw.id})">View file</button>`:''}
+        ${hw.link?`<a class="hw-link" style="margin-top:6px;display:inline-block;" href="${hw.link}" target="_blank">Open link</a>`:''}
       </div>
       <button class="submit-hw-btn" onclick="openSubmitModal(${hw.id})">Submit work</button>
     </div>`).join('');
 }
 
-function renderInlineFile(hw){
-  if(!hw.fileData) return '';
-  if(isAudio(hw.fileType)){
-    return `<audio controls class="audio-player" src="${hw.fileData}"></audio>`;
-  }
-  return `<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>`;
-}
-
 // ── Students ───────────────────────────────────────────────────────────────
 function saveStudent(){
-  const name=document.getElementById('student-name').value.trim();
-  if(!name){ alert('Please enter a name.'); return; }
-  if(editingStudentId!==null){
-    students=students.map(s=>s.id===editingStudentId?{...s,name}:s);
-    editingStudentId=null;
-    document.getElementById('student-modal-title').textContent='Add Student';
-  } else { students.push({id:Date.now(),name}); }
-  renderStudentList(); closeModal('student-modal');
-  document.getElementById('student-name').value='';
+  const name=document.getElementById('student-name').value.trim(); if(!name){ alert('Please enter a name.'); return; }
+  if(editingStudentId!==null){ students=students.map(s=>s.id===editingStudentId?{...s,name}:s); editingStudentId=null; document.getElementById('student-modal-title').textContent='Add Student'; }
+  else { students.push({id:Date.now(),name}); }
+  lsSave(); renderStudentList(); closeModal('student-modal'); document.getElementById('student-name').value='';
 }
-function editStudent(id){
-  const s=students.find(s=>s.id===id); if(!s)return;
-  editingStudentId=id;
-  document.getElementById('student-name').value=s.name;
-  document.getElementById('student-modal-title').textContent='Edit Student';
-  openModal('student-modal');
-}
-function deleteStudent(id){ students=students.filter(s=>s.id!==id); renderStudentList(); }
+function editStudent(id){ const s=students.find(s=>s.id===id); if(!s)return; editingStudentId=id; document.getElementById('student-name').value=s.name; document.getElementById('student-modal-title').textContent='Edit Student'; openModal('student-modal'); }
+function deleteStudent(id){ students=students.filter(s=>s.id!==id); lsSave(); renderStudentList(); }
 function initials(name){ return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+
 function renderStudentList(){
   const el=document.getElementById('student-list');
   if(!students.length){ el.innerHTML='<div style="font-size:12px;color:var(--text3);">No students added yet.</div>'; return; }
@@ -634,28 +641,22 @@ function renderStudentList(){
 // ── Submissions ────────────────────────────────────────────────────────────
 function openSubmitModal(hwId){
   currentSubmitHwId=hwId; currentSubmitFile=null; currentSubmitData=null;
-  document.getElementById('submit-chosen').textContent='';
-  document.getElementById('submit-file').value='';
+  document.getElementById('submit-chosen').textContent=''; document.getElementById('submit-file').value='';
   const hw=homeworks.find(h=>h.id===hwId);
   document.getElementById('submit-hw-name').textContent=hw?'Assignment: '+hw.title:'';
   openModal('submit-modal');
 }
 function submitFileChosen(input){
   const f=input.files[0]; if(!f)return;
-  currentSubmitFile=f;
-  document.getElementById('submit-chosen').textContent='📎 '+f.name;
-  const r=new FileReader();
-  r.onload=e=>{ currentSubmitData=e.target.result; };
-  r.readAsDataURL(f);
+  currentSubmitFile=f; document.getElementById('submit-chosen').textContent='📎 '+f.name;
+  const r=new FileReader(); r.onload=e=>{ currentSubmitData=e.target.result; }; r.readAsDataURL(f);
 }
 function doSubmit(){
   if(!studentName){ alert('Please enter your name at the top of the page first.'); closeModal('submit-modal'); return; }
   if(!currentSubmitFile){ alert('Please upload a file.'); return; }
   const save=()=>{
-    submissions.push({id:Date.now(),studentName,hwId:currentSubmitHwId,
-      fileName:currentSubmitFile.name,fileData:currentSubmitData,
-      fileType:currentSubmitFile.type,date:new Date().toLocaleDateString()});
-    renderSubmissions(); renderStudentList(); closeModal('submit-modal');
+    submissions.push({id:Date.now(),studentName,hwId:currentSubmitHwId,fileName:currentSubmitFile.name,fileData:currentSubmitData,fileType:currentSubmitFile.type,date:new Date().toLocaleDateString()});
+    lsSave(); renderSubmissions(); renderStudentList(); closeModal('submit-modal');
     alert('✅ Homework submitted successfully!');
   };
   currentSubmitData?save():setTimeout(save,600);
@@ -671,33 +672,31 @@ function renderSubmissions(){
         <div class="sub-item-name">${sub.studentName}</div>
       </div>
       <div class="sub-item-meta">${hw?hw.title+' · ':''}${sub.date}</div>
-      <button class="view-file-btn" onclick="viewSubmission(${sub.id})">View / Play file</button>
+      <button class="view-file-btn" onclick="viewSubmission(${sub.id})">▶ View / Play</button>
     </div>`;
   }).join('');
 }
 
-// ── File viewer (with audio playback) ──────────────────────────────────────
-function viewFile(hwId){
-  const hw=homeworks.find(h=>h.id===hwId); if(!hw||!hw.fileData)return;
-  showViewer(hw.title, hw.fileData, hw.fileType, hw.fileName);
-}
-function viewSubmission(subId){
-  const sub=submissions.find(s=>s.id===subId); if(!sub)return;
-  showViewer(sub.studentName+"'s work", sub.fileData, sub.fileType, sub.fileName);
-}
-function showViewer(title, dataUrl, fileType, fileName){
+// ── File viewer ─────────────────────────────────────────────────────────────
+const AUDIO_TYPES=['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm'];
+function isAudio(t){ return t&&(AUDIO_TYPES.includes(t)||t.startsWith('audio/')); }
+function isImage(t){ return t&&t.startsWith('image/'); }
+function isPdf(t){ return t==='application/pdf'; }
+
+function viewFile(hwId){ const hw=homeworks.find(h=>h.id===hwId); if(!hw||!hw.fileData)return; showViewer(hw.title,hw.fileData,hw.fileType,hw.fileName); }
+function viewSubmission(subId){ const sub=submissions.find(s=>s.id===subId); if(!sub)return; showViewer(sub.studentName+"'s work",sub.fileData,sub.fileType,sub.fileName); }
+
+function showViewer(title,dataUrl,fileType,fileName){
   document.getElementById('view-title').textContent=title;
   let body='';
   if(isAudio(fileType)){
-    body=`<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div>
-      <audio controls style="width:100%;border-radius:8px;" src="${dataUrl}"></audio>`;
+    body=`<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div><audio controls style="width:100%;" src="${dataUrl}"></audio>`;
   } else if(isImage(fileType)){
     body=`<img src="${dataUrl}" style="max-width:100%;border-radius:8px;" />`;
   } else if(isPdf(fileType)){
     body=`<iframe src="${dataUrl}" style="width:100%;height:420px;border:none;border-radius:8px;"></iframe>`;
   } else {
-    body=`<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p>
-      <a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`;
+    body=`<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p><a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`;
   }
   document.getElementById('view-body').innerHTML=body;
   openModal('view-modal');
@@ -720,31 +719,14 @@ function speak(text){
 }
 
 // ── Flashcards ─────────────────────────────────────────────────────────────
-function typeTag(t){ return `<span class="card-tag tag-${t}">${t}</span>`; }
+function typeTag(t){ return`<span class="card-tag tag-${t}">${t}</span>`; }
 function buildTabs(){
   const c=document.getElementById('tabs'); c.innerHTML='';
-  Object.keys(DECKS).forEach(name=>{
-    const b=document.createElement('button');
-    b.className='tab'+(name===currentDeck?' active':'');
-    b.textContent=name;
-    b.onclick=()=>{ currentDeck=name; buildTabs(); loadDeck(); };
-    c.appendChild(b);
-  });
+  Object.keys(DECKS).forEach(name=>{ const b=document.createElement('button'); b.className='tab'+(name===currentDeck?' active':''); b.textContent=name; b.onclick=()=>{ currentDeck=name; buildTabs(); loadDeck(); }; c.appendChild(b); });
 }
 function loadDeck(){ cards=[...DECKS[currentDeck]]; idx=0; flipped=false; quizScore=0; quizTotal=0; hideScore(); mode==='flash'?renderCard():startQuiz(); }
-function setMode(m){
-  mode=m;
-  document.getElementById('btn-flash').classList.toggle('active',m==='flash');
-  document.getElementById('btn-quiz').classList.toggle('active',m==='quiz');
-  document.getElementById('flash-view').style.display=m==='flash'?'':'none';
-  document.getElementById('quiz-view').style.display=m==='quiz'?'':'none';
-  hideScore(); m==='flash'?renderCard():startQuiz();
-}
-function shuffle(){
-  for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; }
-  idx=0; flipped=false;
-  mode==='flash'?renderCard():(quizCards=[...cards],quizIdx=0,quizScore=0,quizTotal=0,hideScore(),renderQuiz());
-}
+function setMode(m){ mode=m; document.getElementById('btn-flash').classList.toggle('active',m==='flash'); document.getElementById('btn-quiz').classList.toggle('active',m==='quiz'); document.getElementById('flash-view').style.display=m==='flash'?'':'none'; document.getElementById('quiz-view').style.display=m==='quiz'?'':'none'; hideScore(); m==='flash'?renderCard():startQuiz(); }
+function shuffle(){ for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; } idx=0; flipped=false; mode==='flash'?renderCard():(quizCards=[...cards],quizIdx=0,quizScore=0,quizTotal=0,hideScore(),renderQuiz()); }
 function hideScore(){ const s=document.getElementById('score-display'); s.style.display='none'; s.textContent=''; }
 function showScore(t){ const s=document.getElementById('score-display'); s.style.display=''; s.textContent=t; }
 function renderCard(){
@@ -797,9 +779,15 @@ function checkAnswer(btn,chosen,correct){
   });
 });
 
+// ── Init ───────────────────────────────────────────────────────────────────
+lsLoad();
 if(window.speechSynthesis)window.speechSynthesis.getVoices();
 buildTabs();
 loadDeck();
+renderHwList();
+renderStudentList();
+renderSubmissions();
+renderHwBanner();
 </script>
 </body>
 </html>
