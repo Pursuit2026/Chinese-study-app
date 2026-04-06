@@ -34,6 +34,12 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .teacher-mode .clear-btn { display: inline-block; }
 .main { max-width: 700px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; width: 100%; }
 
+/* Sync status */
+.sync-pill { font-size: 11px; padding: 3px 10px; border-radius: 100px; }
+.sync-pill.synced { background: var(--green-light); color: var(--green); }
+.sync-pill.syncing { background: var(--amber-light); color: var(--amber); }
+.sync-pill.error { background: var(--red-light); color: var(--red); }
+
 /* Sidebar */
 .sb-section { border-bottom: 1px solid var(--border); padding: 1rem; }
 .sb-section:last-child { border-bottom: none; }
@@ -97,10 +103,6 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .sub-item-meta { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
 .view-file-btn { font-size: 12px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--blue); cursor: pointer; font-family: 'DM Sans', sans-serif; }
 .view-file-btn:hover { background: var(--blue-light); }
-
-/* Saved indicator */
-.saved-pill { font-size: 11px; color: var(--green); background: var(--green-light); padding: 3px 10px; border-radius: 100px; opacity: 0; transition: opacity 0.4s; }
-.saved-pill.show { opacity: 1; }
 
 /* Modal */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
@@ -265,7 +267,7 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
 <div class="modal-overlay" id="clear-modal">
   <div class="modal" style="max-width:360px;">
     <div class="modal-title">Clear all data?</div>
-    <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;">This will permanently delete all students, homework assignments, and submissions. This cannot be undone.</p>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;">This will permanently delete all students, homework, and submissions from the cloud. This cannot be undone.</p>
     <div class="modal-row">
       <button class="sb-btn ghost" onclick="closeModal('clear-modal')">Cancel</button>
       <button class="sb-btn" style="background:var(--red);color:white;border-color:var(--red);" onclick="clearAllData()">Yes, clear everything</button>
@@ -280,18 +282,18 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
         Homework
         <button class="sb-add-btn" id="hw-add-btn" style="display:none;" onclick="openHwModal()" title="Add assignment">+</button>
       </div>
-      <div id="hw-list"><div style="font-size:12px;color:var(--text3);">No assignments yet.</div></div>
+      <div id="hw-list"><div style="font-size:12px;color:var(--text3);">Loading...</div></div>
     </div>
     <div class="sb-section teacher-only-section">
       <div class="sb-title">
         Students
         <button class="sb-add-btn" onclick="openModal('student-modal')" title="Add student">+</button>
       </div>
-      <div id="student-list"><div style="font-size:12px;color:var(--text3);">No students added yet.</div></div>
+      <div id="student-list"><div style="font-size:12px;color:var(--text3);">Loading...</div></div>
     </div>
     <div class="sb-section teacher-only-section">
       <div class="sb-title">Submissions</div>
-      <div id="submissions-list"><div style="font-size:12px;color:var(--text3);">No submissions yet.</div></div>
+      <div id="submissions-list"><div style="font-size:12px;color:var(--text3);">Loading...</div></div>
     </div>
   </aside>
 
@@ -299,7 +301,7 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
     <header>
       <div class="logo">学中文 <span>Chinese Study App</span></div>
       <div class="header-right">
-        <span class="saved-pill" id="saved-pill">✓ Saved</span>
+        <span class="sync-pill syncing" id="sync-pill">⟳ Connecting...</span>
         <button class="teacher-btn" id="teacher-toggle" onclick="toggleTeacher()">Teacher mode</button>
         <button class="clear-btn" onclick="openModal('clear-modal')">Clear all data</button>
       </div>
@@ -337,7 +339,31 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
   </div>
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
+// ── Firebase init ──────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBM2HJ7Go-Uq3gS9OBKHQgIb4Zrt8zdq74",
+  authDomain: "chinese-study-lab-app.firebaseapp.com",
+  databaseURL: "https://chinese-study-lab-app-default-rtdb.firebaseio.com",
+  projectId: "chinese-study-lab-app",
+  storageBucket: "chinese-study-lab-app.firebasestorage.app",
+  messagingSenderId: "687839525160",
+  appId: "1:687839525160:web:7bc7b80dc3026a00ec781d"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function setSyncStatus(status, text) {
+  const pill = document.getElementById('sync-pill');
+  pill.className = 'sync-pill ' + status;
+  pill.textContent = text;
+}
+
+// ── Vocabulary decks ───────────────────────────────────────────────────────
 const DECKS = {
   "Small Talk": [
     {ch:"吃了吗？",py:"Chī le ma?",en:"Have you eaten?",type:"vocab"},
@@ -453,181 +479,184 @@ let isTeacher=false, studentName='';
 let homeworks=[], students=[], submissions=[];
 let editingStudentId=null, currentHwFile=null, currentSubmitFile=null, currentSubmitData=null, currentSubmitHwId=null;
 
-// ── Local Storage ──────────────────────────────────────────────────────────
-const LS_KEYS = { students:'csa_students', homeworks:'csa_homeworks', submissions:'csa_submissions' };
-let saveTimer=null;
+// ── Firebase listeners ─────────────────────────────────────────────────────
+function initFirebase() {
+  setSyncStatus('syncing', '⟳ Connecting...');
 
-function lsSave(){
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
-    try {
-      localStorage.setItem(LS_KEYS.students, JSON.stringify(students));
-      localStorage.setItem(LS_KEYS.homeworks, JSON.stringify(homeworks));
-      localStorage.setItem(LS_KEYS.submissions, JSON.stringify(submissions));
-      flashSaved();
-    } catch(e) {
-      console.warn('Storage full or unavailable:', e);
-    }
-  }, 300);
+  db.ref('students').on('value', snap => {
+    students = snap.val() ? Object.values(snap.val()) : [];
+    renderStudentList();
+    renderHwBanner();
+    setSyncStatus('synced', '✓ Synced');
+  }, () => setSyncStatus('error', '✕ Offline'));
+
+  db.ref('homeworks').on('value', snap => {
+    homeworks = snap.val() ? Object.values(snap.val()) : [];
+    renderHwList();
+    renderHwBanner();
+  });
+
+  db.ref('submissions').on('value', snap => {
+    submissions = snap.val() ? Object.values(snap.val()) : [];
+    renderSubmissions();
+    renderStudentList();
+  });
 }
 
-function lsLoad(){
-  try {
-    const s=localStorage.getItem(LS_KEYS.students);
-    const h=localStorage.getItem(LS_KEYS.homeworks);
-    const sub=localStorage.getItem(LS_KEYS.submissions);
-    if(s) students=JSON.parse(s);
-    if(h) homeworks=JSON.parse(h);
-    if(sub) submissions=JSON.parse(sub);
-  } catch(e){ console.warn('Could not load saved data:', e); }
+function fbSave(path, data) {
+  setSyncStatus('syncing', '⟳ Saving...');
+  return db.ref(path).set(data)
+    .then(() => setSyncStatus('synced', '✓ Synced'))
+    .catch(() => setSyncStatus('error', '✕ Error saving'));
 }
 
-function flashSaved(){
-  const pill=document.getElementById('saved-pill');
-  pill.classList.add('show');
-  setTimeout(()=>pill.classList.remove('show'), 2000);
+function arrayToObj(arr) {
+  const obj = {};
+  arr.forEach(item => { obj[item.id] = item; });
+  return obj;
 }
 
-function clearAllData(){
-  students=[]; homeworks=[]; submissions=[];
-  localStorage.removeItem(LS_KEYS.students);
-  localStorage.removeItem(LS_KEYS.homeworks);
-  localStorage.removeItem(LS_KEYS.submissions);
-  renderHwList(); renderHwBanner(); renderStudentList(); renderSubmissions();
+function clearAllData() {
+  db.ref('students').remove();
+  db.ref('homeworks').remove();
+  db.ref('submissions').remove();
   closeModal('clear-modal');
 }
 
 // ── Student name ───────────────────────────────────────────────────────────
-function confirmName(){
-  const val=document.getElementById('name-input').value.trim(); if(!val)return;
-  studentName=val;
-  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
+function confirmName() {
+  const val = document.getElementById('name-input').value.trim(); if(!val) return;
+  studentName = val;
+  document.getElementById('name-bar').innerHTML = `<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
   renderHwBanner();
 }
-function clearName(){
-  studentName='';
-  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Your name:</span><input id="name-input" placeholder="Enter your name to see your homework" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button>`;
+function clearName() {
+  studentName = '';
+  document.getElementById('name-bar').innerHTML = `<span class="name-entry-label">Your name:</span><input id="name-input" placeholder="Enter your name to see your homework" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button>`;
   renderHwBanner();
 }
 
 // ── Teacher toggle ─────────────────────────────────────────────────────────
-function toggleTeacher(){
-  isTeacher=!isTeacher;
-  const btn=document.getElementById('teacher-toggle');
-  btn.classList.toggle('active',isTeacher);
-  btn.textContent=isTeacher?'✓ Teacher mode':'Teacher mode';
-  document.getElementById('app-layout').classList.toggle('teacher-mode',isTeacher);
-  document.getElementById('hw-add-btn').style.display=isTeacher?'flex':'none';
-  document.getElementById('name-bar').style.display=isTeacher?'none':'';
+function toggleTeacher() {
+  isTeacher = !isTeacher;
+  const btn = document.getElementById('teacher-toggle');
+  btn.classList.toggle('active', isTeacher);
+  btn.textContent = isTeacher ? '✓ Teacher mode' : 'Teacher mode';
+  document.getElementById('app-layout').classList.toggle('teacher-mode', isTeacher);
+  document.getElementById('hw-add-btn').style.display = isTeacher ? 'flex' : 'none';
+  document.getElementById('name-bar').style.display = isTeacher ? 'none' : '';
   renderHwBanner(); renderHwList();
 }
 
 // ── Modals ─────────────────────────────────────────────────────────────────
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function openHwModal(){
-  const list=document.getElementById('assign-list');
-  if(!students.length){
-    list.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Add students first to assign homework.</div>';
+function openHwModal() {
+  const list = document.getElementById('assign-list');
+  if (!students.length) {
+    list.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text3);">Add students first.</div>';
   } else {
-    list.innerHTML=`<div class="assign-all-row"><input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" /><label for="assign-all">Select all students</label></div>`
-      +students.map(s=>`<div class="assign-item"><input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" /><label for="assign-${s.id}">${s.name}</label></div>`).join('');
+    list.innerHTML = `<div class="assign-all-row"><input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" /><label for="assign-all">Select all students</label></div>`
+      + students.map(s => `<div class="assign-item"><input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" /><label for="assign-${s.id}">${s.name}</label></div>`).join('');
   }
   openModal('hw-modal');
 }
-function toggleAssignAll(cb){ document.querySelectorAll('.assign-cb').forEach(c=>c.checked=cb.checked); }
-function updateAssignAll(){ const cbs=[...document.querySelectorAll('.assign-cb')]; const aa=document.getElementById('assign-all'); if(aa) aa.checked=cbs.length&&cbs.every(c=>c.checked); }
-function getAssignedIds(){ return [...document.querySelectorAll('.assign-cb:checked')].map(c=>parseInt(c.value)); }
+function toggleAssignAll(cb) { document.querySelectorAll('.assign-cb').forEach(c => c.checked = cb.checked); }
+function updateAssignAll() { const cbs = [...document.querySelectorAll('.assign-cb')]; const aa = document.getElementById('assign-all'); if(aa) aa.checked = cbs.length && cbs.every(c => c.checked); }
+function getAssignedIds() { return [...document.querySelectorAll('.assign-cb:checked')].map(c => parseInt(c.value)); }
 
 // ── Homework ───────────────────────────────────────────────────────────────
-function hwFileChosen(input){ const f=input.files[0]; if(!f)return; currentHwFile=f; document.getElementById('hw-chosen').textContent='📎 '+f.name; }
+function hwFileChosen(input) { const f = input.files[0]; if(!f) return; currentHwFile = f; document.getElementById('hw-chosen').textContent = '📎 ' + f.name; }
 
-function saveHomework(){
-  const title=document.getElementById('hw-title').value.trim();
-  const date=document.getElementById('hw-date').value;
-  const link=document.getElementById('hw-link').value.trim();
-  const assignedIds=getAssignedIds();
-  if(!title){ alert('Please enter a title.'); return; }
-  const hw={id:Date.now(),title,date,link,fileName:null,fileData:null,fileType:null,assignedIds};
-  if(currentHwFile){
-    const r=new FileReader();
-    r.onload=e=>{ hw.fileName=currentHwFile.name; hw.fileData=e.target.result; hw.fileType=currentHwFile.type; homeworks.push(hw); finishHw(); };
+function saveHomework() {
+  const title = document.getElementById('hw-title').value.trim();
+  const date = document.getElementById('hw-date').value;
+  const link = document.getElementById('hw-link').value.trim();
+  const assignedIds = getAssignedIds();
+  if (!title) { alert('Please enter a title.'); return; }
+  const hw = { id: Date.now(), title, date, link, fileName: null, fileData: null, fileType: null, assignedIds };
+  if (currentHwFile) {
+    const r = new FileReader();
+    r.onload = e => { hw.fileName = currentHwFile.name; hw.fileData = e.target.result; hw.fileType = currentHwFile.type; finishHw(hw); };
     r.readAsDataURL(currentHwFile);
-  } else { homeworks.push(hw); finishHw(); }
+  } else { finishHw(hw); }
 }
-function finishHw(){
-  lsSave(); renderHwList(); renderHwBanner(); closeModal('hw-modal');
-  ['hw-title','hw-date','hw-link'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('hw-chosen').textContent=''; document.getElementById('hw-file').value=''; currentHwFile=null;
+function finishHw(hw) {
+  homeworks.push(hw);
+  fbSave('homeworks', arrayToObj(homeworks));
+  closeModal('hw-modal');
+  ['hw-title','hw-date','hw-link'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('hw-chosen').textContent = ''; document.getElementById('hw-file').value = ''; currentHwFile = null;
 }
-function deleteHw(id){ homeworks=homeworks.filter(h=>h.id!==id); lsSave(); renderHwList(); renderHwBanner(); }
+function deleteHw(id) { homeworks = homeworks.filter(h => h.id !== id); fbSave('homeworks', arrayToObj(homeworks)); }
 
-function getAssignedNames(hw){
-  if(!hw.assignedIds||!hw.assignedIds.length) return 'All students';
-  return hw.assignedIds.map(id=>{ const s=students.find(s=>s.id===id); return s?s.name:''; }).filter(Boolean).join(', ');
+function getAssignedNames(hw) {
+  if (!hw.assignedIds || !hw.assignedIds.length) return 'All students';
+  return hw.assignedIds.map(id => { const s = students.find(s => s.id === id); return s ? s.name : ''; }).filter(Boolean).join(', ');
 }
-function isAssignedToStudent(hw,name){
-  if(!name) return false;
-  if(!hw.assignedIds||!hw.assignedIds.length) return true;
-  return hw.assignedIds.some(id=>{ const s=students.find(s=>s.id===id); return s&&s.name.toLowerCase()===name.toLowerCase(); });
+function isAssignedToStudent(hw, name) {
+  if (!name) return false;
+  if (!hw.assignedIds || !hw.assignedIds.length) return true;
+  return hw.assignedIds.some(id => { const s = students.find(s => s.id === id); return s && s.name.toLowerCase() === name.toLowerCase(); });
 }
 
-function renderHwList(){
-  const el=document.getElementById('hw-list');
-  if(!homeworks.length){ el.innerHTML='<div style="font-size:12px;color:var(--text3);">No assignments yet.</div>'; return; }
-  el.innerHTML=homeworks.map(hw=>`
+function renderHwList() {
+  const el = document.getElementById('hw-list');
+  if (!homeworks.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">No assignments yet.</div>'; return; }
+  el.innerHTML = homeworks.map(hw => `
     <div class="hw-item">
       <div class="hw-item-title">${hw.title}</div>
-      ${hw.date?`<div class="hw-item-date">Due: ${fmtDate(hw.date)}</div>`:''}
+      ${hw.date ? `<div class="hw-item-date">Due: ${fmtDate(hw.date)}</div>` : ''}
       <div class="hw-item-assigned">👥 ${getAssignedNames(hw)}</div>
       <div class="hw-item-actions">
-        ${hw.link?`<a class="hw-link" href="${hw.link}" target="_blank">Open link</a>`:''}
-        ${hw.fileData?`<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>`:''}
+        ${hw.link ? `<a class="hw-link" href="${hw.link}" target="_blank">Open link</a>` : ''}
+        ${hw.fileData ? `<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>` : ''}
         <button class="hw-del" onclick="deleteHw(${hw.id})">Delete</button>
       </div>
     </div>`).join('');
 }
 
-function renderHwBanner(){
-  const el=document.getElementById('hw-banner');
-  if(isTeacher){ el.innerHTML=''; return; }
-  if(!studentName){ el.innerHTML=''; return; }
-  const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,studentName));
-  if(!myHw.length){
-    el.innerHTML=`<div class="empty-hw"><div class="empty-hw-icon">📭</div><div class="empty-hw-text">No homework assigned to <strong>${studentName}</strong> yet.</div></div>`;
+function renderHwBanner() {
+  const el = document.getElementById('hw-banner');
+  if (isTeacher) { el.innerHTML = ''; return; }
+  if (!studentName) { el.innerHTML = ''; return; }
+  const myHw = homeworks.filter(hw => isAssignedToStudent(hw, studentName));
+  if (!myHw.length) {
+    el.innerHTML = `<div class="empty-hw"><div class="empty-hw-icon">📭</div><div class="empty-hw-text">No homework assigned to <strong>${studentName}</strong> yet.</div></div>`;
     return;
   }
-  el.innerHTML=myHw.map(hw=>`
+  el.innerHTML = myHw.map(hw => `
     <div class="submit-banner">
       <div style="flex:1;">
         <div class="submit-banner-title">📋 ${hw.title}</div>
-        ${hw.date?`<div class="submit-banner-text">Due: ${fmtDate(hw.date)}</div>`:''}
-        ${hw.fileData&&isAudio(hw.fileType)?`<audio controls src="${hw.fileData}"></audio>`:''}
-        ${hw.fileData&&!isAudio(hw.fileType)?`<button class="hw-link" style="margin-top:6px;" onclick="viewFile(${hw.id})">View file</button>`:''}
-        ${hw.link?`<a class="hw-link" style="margin-top:6px;display:inline-block;" href="${hw.link}" target="_blank">Open link</a>`:''}
+        ${hw.date ? `<div class="submit-banner-text">Due: ${fmtDate(hw.date)}</div>` : ''}
+        ${hw.fileData && isAudio(hw.fileType) ? `<audio controls src="${hw.fileData}"></audio>` : ''}
+        ${hw.fileData && !isAudio(hw.fileType) ? `<button class="hw-link" style="margin-top:6px;" onclick="viewFile(${hw.id})">View file</button>` : ''}
+        ${hw.link ? `<a class="hw-link" style="margin-top:6px;display:inline-block;" href="${hw.link}" target="_blank">Open link</a>` : ''}
       </div>
       <button class="submit-hw-btn" onclick="openSubmitModal(${hw.id})">Submit work</button>
     </div>`).join('');
 }
 
 // ── Students ───────────────────────────────────────────────────────────────
-function saveStudent(){
-  const name=document.getElementById('student-name').value.trim(); if(!name){ alert('Please enter a name.'); return; }
-  if(editingStudentId!==null){ students=students.map(s=>s.id===editingStudentId?{...s,name}:s); editingStudentId=null; document.getElementById('student-modal-title').textContent='Add Student'; }
-  else { students.push({id:Date.now(),name}); }
-  lsSave(); renderStudentList(); closeModal('student-modal'); document.getElementById('student-name').value='';
+function saveStudent() {
+  const name = document.getElementById('student-name').value.trim(); if (!name) { alert('Please enter a name.'); return; }
+  if (editingStudentId !== null) { students = students.map(s => s.id === editingStudentId ? {...s, name} : s); editingStudentId = null; document.getElementById('student-modal-title').textContent = 'Add Student'; }
+  else { students.push({id: Date.now(), name}); }
+  fbSave('students', arrayToObj(students));
+  closeModal('student-modal'); document.getElementById('student-name').value = '';
 }
-function editStudent(id){ const s=students.find(s=>s.id===id); if(!s)return; editingStudentId=id; document.getElementById('student-name').value=s.name; document.getElementById('student-modal-title').textContent='Edit Student'; openModal('student-modal'); }
-function deleteStudent(id){ students=students.filter(s=>s.id!==id); lsSave(); renderStudentList(); }
-function initials(name){ return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+function editStudent(id) { const s = students.find(s => s.id === id); if(!s) return; editingStudentId = id; document.getElementById('student-name').value = s.name; document.getElementById('student-modal-title').textContent = 'Edit Student'; openModal('student-modal'); }
+function deleteStudent(id) { students = students.filter(s => s.id !== id); fbSave('students', arrayToObj(students)); }
+function initials(name) { return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase(); }
 
-function renderStudentList(){
-  const el=document.getElementById('student-list');
-  if(!students.length){ el.innerHTML='<div style="font-size:12px;color:var(--text3);">No students added yet.</div>'; return; }
-  el.innerHTML=students.map(s=>{
-    const sub=submissions.find(sub=>sub.studentName.toLowerCase()===s.name.toLowerCase());
-    const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,s.name));
+function renderStudentList() {
+  const el = document.getElementById('student-list');
+  if (!students.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">No students added yet.</div>'; return; }
+  el.innerHTML = students.map(s => {
+    const sub = submissions.find(sub => sub.studentName.toLowerCase() === s.name.toLowerCase());
+    const myHw = homeworks.filter(hw => isAssignedToStudent(hw, s.name));
     return `<div class="student-item">
       <div class="student-avatar">${initials(s.name)}</div>
       <div class="student-name">${s.name}<div style="font-size:10px;color:var(--text3);">${myHw.length} assignment${myHw.length!==1?'s':''}</div></div>
@@ -639,155 +668,147 @@ function renderStudentList(){
 }
 
 // ── Submissions ────────────────────────────────────────────────────────────
-function openSubmitModal(hwId){
-  currentSubmitHwId=hwId; currentSubmitFile=null; currentSubmitData=null;
-  document.getElementById('submit-chosen').textContent=''; document.getElementById('submit-file').value='';
-  const hw=homeworks.find(h=>h.id===hwId);
-  document.getElementById('submit-hw-name').textContent=hw?'Assignment: '+hw.title:'';
+function openSubmitModal(hwId) {
+  currentSubmitHwId = hwId; currentSubmitFile = null; currentSubmitData = null;
+  document.getElementById('submit-chosen').textContent = ''; document.getElementById('submit-file').value = '';
+  const hw = homeworks.find(h => h.id === hwId);
+  document.getElementById('submit-hw-name').textContent = hw ? 'Assignment: ' + hw.title : '';
   openModal('submit-modal');
 }
-function submitFileChosen(input){
-  const f=input.files[0]; if(!f)return;
-  currentSubmitFile=f; document.getElementById('submit-chosen').textContent='📎 '+f.name;
-  const r=new FileReader(); r.onload=e=>{ currentSubmitData=e.target.result; }; r.readAsDataURL(f);
+function submitFileChosen(input) {
+  const f = input.files[0]; if(!f) return;
+  currentSubmitFile = f; document.getElementById('submit-chosen').textContent = '📎 ' + f.name;
+  const r = new FileReader(); r.onload = e => { currentSubmitData = e.target.result; }; r.readAsDataURL(f);
 }
-function doSubmit(){
-  if(!studentName){ alert('Please enter your name at the top of the page first.'); closeModal('submit-modal'); return; }
-  if(!currentSubmitFile){ alert('Please upload a file.'); return; }
-  const save=()=>{
-    submissions.push({id:Date.now(),studentName,hwId:currentSubmitHwId,fileName:currentSubmitFile.name,fileData:currentSubmitData,fileType:currentSubmitFile.type,date:new Date().toLocaleDateString()});
-    lsSave(); renderSubmissions(); renderStudentList(); closeModal('submit-modal');
+function doSubmit() {
+  if (!studentName) { alert('Please enter your name at the top of the page first.'); closeModal('submit-modal'); return; }
+  if (!currentSubmitFile) { alert('Please upload a file.'); return; }
+  const save = () => {
+    const sub = {id: Date.now(), studentName, hwId: currentSubmitHwId, fileName: currentSubmitFile.name, fileData: currentSubmitData, fileType: currentSubmitFile.type, date: new Date().toLocaleDateString()};
+    submissions.push(sub);
+    fbSave('submissions', arrayToObj(submissions));
+    closeModal('submit-modal');
     alert('✅ Homework submitted successfully!');
   };
-  currentSubmitData?save():setTimeout(save,600);
+  currentSubmitData ? save() : setTimeout(save, 600);
 }
-function renderSubmissions(){
-  const el=document.getElementById('submissions-list');
-  if(!submissions.length){ el.innerHTML='<div style="font-size:12px;color:var(--text3);">No submissions yet.</div>'; return; }
-  el.innerHTML=submissions.map(sub=>{
-    const hw=homeworks.find(h=>h.id===sub.hwId);
+function renderSubmissions() {
+  const el = document.getElementById('submissions-list');
+  if (!submissions.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">No submissions yet.</div>'; return; }
+  el.innerHTML = submissions.map(sub => {
+    const hw = homeworks.find(h => h.id === sub.hwId);
     return `<div class="sub-item">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
         <div class="student-avatar" style="background:var(--blue-light);color:var(--blue);">${initials(sub.studentName)}</div>
         <div class="sub-item-name">${sub.studentName}</div>
       </div>
-      <div class="sub-item-meta">${hw?hw.title+' · ':''}${sub.date}</div>
+      <div class="sub-item-meta">${hw ? hw.title + ' · ' : ''}${sub.date}</div>
       <button class="view-file-btn" onclick="viewSubmission(${sub.id})">▶ View / Play</button>
     </div>`;
   }).join('');
 }
 
 // ── File viewer ─────────────────────────────────────────────────────────────
-const AUDIO_TYPES=['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm'];
-function isAudio(t){ return t&&(AUDIO_TYPES.includes(t)||t.startsWith('audio/')); }
-function isImage(t){ return t&&t.startsWith('image/'); }
-function isPdf(t){ return t==='application/pdf'; }
+const AUDIO_TYPES = ['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm'];
+function isAudio(t) { return t && (AUDIO_TYPES.includes(t) || t.startsWith('audio/')); }
+function isImage(t) { return t && t.startsWith('image/'); }
+function isPdf(t) { return t === 'application/pdf'; }
 
-function viewFile(hwId){ const hw=homeworks.find(h=>h.id===hwId); if(!hw||!hw.fileData)return; showViewer(hw.title,hw.fileData,hw.fileType,hw.fileName); }
-function viewSubmission(subId){ const sub=submissions.find(s=>s.id===subId); if(!sub)return; showViewer(sub.studentName+"'s work",sub.fileData,sub.fileType,sub.fileName); }
-
-function showViewer(title,dataUrl,fileType,fileName){
-  document.getElementById('view-title').textContent=title;
-  let body='';
-  if(isAudio(fileType)){
-    body=`<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div><audio controls style="width:100%;" src="${dataUrl}"></audio>`;
-  } else if(isImage(fileType)){
-    body=`<img src="${dataUrl}" style="max-width:100%;border-radius:8px;" />`;
-  } else if(isPdf(fileType)){
-    body=`<iframe src="${dataUrl}" style="width:100%;height:420px;border:none;border-radius:8px;"></iframe>`;
-  } else {
-    body=`<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p><a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`;
-  }
-  document.getElementById('view-body').innerHTML=body;
+function viewFile(hwId) { const hw = homeworks.find(h => h.id === hwId); if(!hw||!hw.fileData) return; showViewer(hw.title, hw.fileData, hw.fileType, hw.fileName); }
+function viewSubmission(subId) { const sub = submissions.find(s => s.id === subId); if(!sub) return; showViewer(sub.studentName + "'s work", sub.fileData, sub.fileType, sub.fileName); }
+function showViewer(title, dataUrl, fileType, fileName) {
+  document.getElementById('view-title').textContent = title;
+  let body = '';
+  if (isAudio(fileType)) { body = `<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div><audio controls style="width:100%;" src="${dataUrl}"></audio>`; }
+  else if (isImage(fileType)) { body = `<img src="${dataUrl}" style="max-width:100%;border-radius:8px;" />`; }
+  else if (isPdf(fileType)) { body = `<iframe src="${dataUrl}" style="width:100%;height:420px;border:none;border-radius:8px;"></iframe>`; }
+  else { body = `<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p><a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`; }
+  document.getElementById('view-body').innerHTML = body;
   openModal('view-modal');
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-function fmtDate(s){ if(!s)return''; const d=new Date(s+'T12:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtDate(s) { if(!s) return ''; const d = new Date(s+'T12:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 
 // ── Speech ─────────────────────────────────────────────────────────────────
-function speak(text){
-  if(!window.speechSynthesis)return;
+function speak(text) {
+  if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='zh-CN'; u.rate=0.85; u.pitch=1;
-  const zh=window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('zh'));
-  if(zh)u.voice=zh;
-  const btn=document.getElementById('speak-btn-main');
-  if(btn){ btn.classList.add('speaking'); u.onend=()=>btn.classList.remove('speaking'); }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN'; u.rate = 0.85; u.pitch = 1;
+  const zh = window.speechSynthesis.getVoices().find(v => v.lang.startsWith('zh'));
+  if (zh) u.voice = zh;
+  const btn = document.getElementById('speak-btn-main');
+  if (btn) { btn.classList.add('speaking'); u.onend = () => btn.classList.remove('speaking'); }
   window.speechSynthesis.speak(u);
 }
 
 // ── Flashcards ─────────────────────────────────────────────────────────────
-function typeTag(t){ return`<span class="card-tag tag-${t}">${t}</span>`; }
-function buildTabs(){
-  const c=document.getElementById('tabs'); c.innerHTML='';
-  Object.keys(DECKS).forEach(name=>{ const b=document.createElement('button'); b.className='tab'+(name===currentDeck?' active':''); b.textContent=name; b.onclick=()=>{ currentDeck=name; buildTabs(); loadDeck(); }; c.appendChild(b); });
+function typeTag(t) { return `<span class="card-tag tag-${t}">${t}</span>`; }
+function buildTabs() {
+  const c = document.getElementById('tabs'); c.innerHTML = '';
+  Object.keys(DECKS).forEach(name => { const b = document.createElement('button'); b.className = 'tab'+(name===currentDeck?' active':''); b.textContent = name; b.onclick = () => { currentDeck = name; buildTabs(); loadDeck(); }; c.appendChild(b); });
 }
-function loadDeck(){ cards=[...DECKS[currentDeck]]; idx=0; flipped=false; quizScore=0; quizTotal=0; hideScore(); mode==='flash'?renderCard():startQuiz(); }
-function setMode(m){ mode=m; document.getElementById('btn-flash').classList.toggle('active',m==='flash'); document.getElementById('btn-quiz').classList.toggle('active',m==='quiz'); document.getElementById('flash-view').style.display=m==='flash'?'':'none'; document.getElementById('quiz-view').style.display=m==='quiz'?'':'none'; hideScore(); m==='flash'?renderCard():startQuiz(); }
-function shuffle(){ for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; } idx=0; flipped=false; mode==='flash'?renderCard():(quizCards=[...cards],quizIdx=0,quizScore=0,quizTotal=0,hideScore(),renderQuiz()); }
-function hideScore(){ const s=document.getElementById('score-display'); s.style.display='none'; s.textContent=''; }
-function showScore(t){ const s=document.getElementById('score-display'); s.style.display=''; s.textContent=t; }
-function renderCard(){
-  if(!cards.length)return;
-  const c=cards[idx]; flipped=false;
+function loadDeck() { cards = [...DECKS[currentDeck]]; idx = 0; flipped = false; quizScore = 0; quizTotal = 0; hideScore(); mode === 'flash' ? renderCard() : startQuiz(); }
+function setMode(m) { mode = m; document.getElementById('btn-flash').classList.toggle('active', m==='flash'); document.getElementById('btn-quiz').classList.toggle('active', m==='quiz'); document.getElementById('flash-view').style.display = m==='flash'?'':'none'; document.getElementById('quiz-view').style.display = m==='quiz'?'':'none'; hideScore(); m==='flash'?renderCard():startQuiz(); }
+function shuffle() { for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; } idx=0; flipped=false; mode==='flash'?renderCard():(quizCards=[...cards],quizIdx=0,quizScore=0,quizTotal=0,hideScore(),renderQuiz()); }
+function hideScore() { const s=document.getElementById('score-display'); s.style.display='none'; s.textContent=''; }
+function showScore(t) { const s=document.getElementById('score-display'); s.style.display=''; s.textContent=t; }
+function renderCard() {
+  if (!cards.length) return;
+  const c = cards[idx]; flipped = false;
   document.getElementById('card').classList.remove('flipped');
-  document.getElementById('front-face').innerHTML=`${typeTag(c.type)}<div class="card-chinese">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="speak-btn" id="speak-btn-main" onclick="event.stopPropagation();speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div class="card-hint">tap card to reveal</div>`;
-  document.getElementById('back-face').innerHTML=`${typeTag(c.type)}<div class="card-english">${c.en}</div>${c.note?`<div class="card-note">💡 ${c.note}</div>`:''}<div class="card-sub">${c.ch} · ${c.py}</div>`;
-  document.getElementById('counter').textContent=`${idx+1} / ${cards.length}`;
-  document.getElementById('prog').style.width=`${((idx+1)/cards.length)*100}%`;
+  document.getElementById('front-face').innerHTML = `${typeTag(c.type)}<div class="card-chinese">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="speak-btn" id="speak-btn-main" onclick="event.stopPropagation();speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div class="card-hint">tap card to reveal</div>`;
+  document.getElementById('back-face').innerHTML = `${typeTag(c.type)}<div class="card-english">${c.en}</div>${c.note?`<div class="card-note">💡 ${c.note}</div>`:''}<div class="card-sub">${c.ch} · ${c.py}</div>`;
+  document.getElementById('counter').textContent = `${idx+1} / ${cards.length}`;
+  document.getElementById('prog').style.width = `${((idx+1)/cards.length)*100}%`;
 }
-function flip(){ flipped=!flipped; document.getElementById('card').classList.toggle('flipped',flipped); }
-function next(){ if(idx<cards.length-1){ idx++; renderCard(); } }
-function prev(){ if(idx>0){ idx--; renderCard(); } }
+function flip() { flipped = !flipped; document.getElementById('card').classList.toggle('flipped', flipped); }
+function next() { if(idx<cards.length-1){ idx++; renderCard(); } }
+function prev() { if(idx>0){ idx--; renderCard(); } }
 
 // ── Quiz ───────────────────────────────────────────────────────────────────
-function startQuiz(){ quizCards=[...cards].sort(()=>Math.random()-0.5); quizIdx=0; quizScore=0; quizTotal=0; quizAnswered=false; hideScore(); renderQuiz(); }
-function renderQuiz(){
-  const body=document.getElementById('quiz-body');
-  if(quizIdx>=quizCards.length){
-    const pct=Math.round(quizScore/quizTotal*100);
-    body.innerHTML=`<div class="done-card"><div class="done-icon">${pct>=80?'🎉':pct>=50?'👍':'📚'}</div><div class="done-score">${quizScore} / ${quizTotal}</div><div class="done-pct">${pct}% correct</div><button class="retry-btn" onclick="startQuiz()">Try again</button></div>`;
+function startQuiz() { quizCards=[...cards].sort(()=>Math.random()-0.5); quizIdx=0; quizScore=0; quizTotal=0; quizAnswered=false; hideScore(); renderQuiz(); }
+function renderQuiz() {
+  const body = document.getElementById('quiz-body');
+  if (quizIdx >= quizCards.length) {
+    const pct = Math.round(quizScore/quizTotal*100);
+    body.innerHTML = `<div class="done-card"><div class="done-icon">${pct>=80?'🎉':pct>=50?'👍':'📚'}</div><div class="done-score">${quizScore} / ${quizTotal}</div><div class="done-pct">${pct}% correct</div><button class="retry-btn" onclick="startQuiz()">Try again</button></div>`;
     showScore(`${quizScore}/${quizTotal}`); document.getElementById('prog').style.width='100%'; return;
   }
-  const c=quizCards[quizIdx]; quizAnswered=false;
-  document.getElementById('prog').style.width=`${((quizIdx+1)/quizCards.length)*100}%`;
-  const wrong=DECKS[currentDeck].filter(x=>x.en!==c.en).sort(()=>Math.random()-0.5).slice(0,3);
-  const opts=[...wrong,c].sort(()=>Math.random()-0.5);
-  body.innerHTML=`<div class="quiz-question">${typeTag(c.type)}<div class="card-chinese" style="font-size:32px;margin:0.5rem 0;">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="quiz-speak" onclick="speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div style="font-size:12px;color:var(--text3);margin-top:0.75rem;">${quizIdx+1} / ${quizCards.length} · ✓ ${quizScore}</div></div>
+  const c = quizCards[quizIdx]; quizAnswered = false;
+  document.getElementById('prog').style.width = `${((quizIdx+1)/quizCards.length)*100}%`;
+  const wrong = DECKS[currentDeck].filter(x=>x.en!==c.en).sort(()=>Math.random()-0.5).slice(0,3);
+  const opts = [...wrong,c].sort(()=>Math.random()-0.5);
+  body.innerHTML = `<div class="quiz-question">${typeTag(c.type)}<div class="card-chinese" style="font-size:32px;margin:0.5rem 0;">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="quiz-speak" onclick="speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div style="font-size:12px;color:var(--text3);margin-top:0.75rem;">${quizIdx+1} / ${quizCards.length} · ✓ ${quizScore}</div></div>
   <div class="quiz-options">${opts.map(o=>`<button class="quiz-opt" onclick="checkAnswer(this,'${o.en.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${c.en.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${o.en}</button>`).join('')}</div>
   <div style="text-align:right;"><button class="nav-btn" id="next-q-btn" onclick="quizIdx++;renderQuiz();" style="display:none;">Next →</button></div>`;
 }
-function checkAnswer(btn,chosen,correct){
-  if(quizAnswered)return; quizAnswered=true; quizTotal++;
-  document.querySelectorAll('.quiz-opt').forEach(b=>{ b.disabled=true; if(b.textContent.trim()===correct)b.classList.add('correct'); });
+function checkAnswer(btn,chosen,correct) {
+  if(quizAnswered) return; quizAnswered=true; quizTotal++;
+  document.querySelectorAll('.quiz-opt').forEach(b=>{ b.disabled=true; if(b.textContent.trim()===correct) b.classList.add('correct'); });
   if(chosen===correct){ quizScore++; btn.classList.add('correct'); } else btn.classList.add('wrong');
   showScore(`${quizScore}/${quizTotal}`); document.getElementById('next-q-btn').style.display='';
 }
 
 // ── Drag & drop ────────────────────────────────────────────────────────────
-['hw-drop','submit-drop'].forEach(id=>{
-  const el=document.getElementById(id); if(!el)return;
-  el.addEventListener('dragover',e=>{ e.preventDefault(); el.classList.add('dragover'); });
-  el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
-  el.addEventListener('drop',e=>{
+['hw-drop','submit-drop'].forEach(id => {
+  const el = document.getElementById(id); if(!el) return;
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('dragover'); });
+  el.addEventListener('dragleave', () => el.classList.remove('dragover'));
+  el.addEventListener('drop', e => {
     e.preventDefault(); el.classList.remove('dragover');
-    const f=e.dataTransfer.files[0]; if(!f)return;
+    const f = e.dataTransfer.files[0]; if(!f) return;
     if(id==='hw-drop'){ currentHwFile=f; document.getElementById('hw-chosen').textContent='📎 '+f.name; }
     else { currentSubmitFile=f; document.getElementById('submit-chosen').textContent='📎 '+f.name; const r=new FileReader(); r.onload=ev=>{ currentSubmitData=ev.target.result; }; r.readAsDataURL(f); }
   });
 });
 
 // ── Init ───────────────────────────────────────────────────────────────────
-lsLoad();
-if(window.speechSynthesis)window.speechSynthesis.getVoices();
+if(window.speechSynthesis) window.speechSynthesis.getVoices();
 buildTabs();
 loadDeck();
-renderHwList();
-renderStudentList();
-renderSubmissions();
-renderHwBanner();
+initFirebase();
 </script>
 </body>
 </html>
