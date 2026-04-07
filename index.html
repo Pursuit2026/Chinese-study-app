@@ -251,8 +251,8 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
       <button class="sb-btn primary" onclick="saveStudent()">Save &amp; Generate Code</button>
     </div>
     <div id="student-modal-done" style="display:none;">
-      <div class="modal-row">
-        <button class="sb-btn primary" onclick="closeStudentModal()">Done</button>
+      <div class="modal-row" style="justify-content:flex-end;">
+        <button class="sb-btn primary" onclick="closeStudentModal()">Done — code copied!</button>
       </div>
     </div>
   </div>
@@ -580,23 +580,23 @@ function renderHwBanner(){
 function saveStudent() {
   const name=document.getElementById('student-name').value.trim();
   if(!name){alert('Please enter a name.');return;}
-  let code;
   if(editingStudentId!==null){
     students=students.map(s=>s.id===editingStudentId?{...s,name}:s);
     editingStudentId=null;
+    document.getElementById('student-modal-btns').querySelector('.sb-btn.primary').textContent='Save & Generate Code';
     fbSave('students',arrayToObj(students));
     closeStudentModal();
   } else {
-    code=generateCode(name);
+    const code=generateCode(name);
     const newStudent={id:Date.now(),name,code};
     students.push(newStudent);
     fbSave('students',arrayToObj(students));
-    // Show the generated code
+    // Show the generated code clearly
     document.getElementById('student-name').disabled=true;
     document.getElementById('new-code-value').textContent=code;
     document.getElementById('new-code-display').style.display='block';
     document.getElementById('student-modal-btns').style.display='none';
-    document.getElementById('student-modal-done').style.display='block';
+    document.getElementById('student-modal-done').style.display='flex';
   }
 }
 function editStudent(id){
