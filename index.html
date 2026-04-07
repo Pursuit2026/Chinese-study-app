@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chinese Study App</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -60,15 +62,26 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .hw-del { font-size: 12px; padding: 3px 8px; border-radius: 100px; border: 1px solid transparent; background: transparent; color: var(--text3); cursor: pointer; font-family: 'DM Sans', sans-serif; display: none; }
 .teacher-mode .hw-del { display: inline-block; }
 .hw-del:hover { color: var(--red); border-color: var(--red-light); background: var(--red-light); }
-.student-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+
+/* Student items with code badge */
+.student-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
 .student-item:last-child { border-bottom: none; }
 .student-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--teal-light); color: var(--teal); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.student-name { font-size: 13px; flex: 1; }
+.student-info { flex: 1; }
+.student-name { font-size: 13px; font-weight: 500; }
+.student-code-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 100px; background: var(--purple-light); color: var(--purple); margin-top: 2px; letter-spacing: 0.5px; }
 .student-edit, .student-del { font-size: 11px; color: var(--text3); cursor: pointer; padding: 2px 6px; border-radius: 4px; border: none; background: transparent; }
 .student-edit:hover { color: var(--teal); background: var(--teal-light); }
 .student-del:hover { color: var(--red); background: var(--red-light); }
 .sub-badge { font-size: 10px; padding: 2px 7px; border-radius: 100px; background: var(--green-light); color: var(--green); font-weight: 500; white-space: nowrap; }
 .sub-badge.pending { background: var(--amber-light); color: var(--amber); }
+
+/* New student code display after adding */
+.new-code-box { background: var(--purple-light); border: 1px solid #AFA9EC; border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px; }
+.new-code-label { font-size: 11px; color: var(--purple); margin-bottom: 4px; }
+.new-code-value { font-size: 22px; font-weight: 700; color: var(--purple); letter-spacing: 2px; }
+.new-code-hint { font-size: 11px; color: #534AB7; margin-top: 4px; }
+
 .assign-list { max-height: 180px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 12px; }
 .assign-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--border); cursor: pointer; }
 .assign-item:last-child { border-bottom: none; }
@@ -82,19 +95,15 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .submit-banner-text { font-size: 12px; color: var(--blue); }
 .submit-hw-btn { padding: 7px 16px; background: var(--blue); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
 .submit-hw-btn:hover { opacity: 0.85; }
-
-/* Feedback */
 .feedback-box { background: var(--green-light); border: 1px solid #c0dd97; border-radius: var(--radius-sm); padding: 10px 12px; margin-top: 8px; }
 .feedback-label { font-size: 11px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
 .feedback-text { font-size: 13px; color: #27500A; line-height: 1.5; }
-.feedback-btn { font-size: 12px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--teal); cursor: pointer; font-family: 'DM Sans', sans-serif; display: none; }
+.feedback-btn { font-size: 12px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--teal); cursor: pointer; font-family: 'DM Sans', sans-serif; display: none; margin-right: 4px; }
 .teacher-mode .feedback-btn { display: inline-block; }
 .feedback-btn:hover { background: var(--teal-light); }
 .feedback-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surface); outline: none; margin-top: 6px; resize: vertical; min-height: 70px; }
 .feedback-input:focus { border-color: var(--teal); }
 .feedback-save-btn { margin-top: 6px; padding: 5px 14px; background: var(--teal); color: white; border: none; border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-.feedback-save-btn:hover { opacity: 0.85; }
-
 .sub-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; }
 .sub-item-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
 .sub-item-meta { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
@@ -226,13 +235,25 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
 
 <!-- Add/Edit Student Modal -->
 <div class="modal-overlay" id="student-modal">
-  <div class="modal">
+  <div class="modal" style="max-width:400px;">
     <div class="modal-title" id="student-modal-title">Add Student</div>
     <label class="modal-label">Student name</label>
     <input class="modal-input" id="student-name" placeholder="Full name" />
-    <div class="modal-row">
-      <button class="sb-btn ghost" onclick="closeModal('student-modal')">Cancel</button>
-      <button class="sb-btn primary" onclick="saveStudent()">Save</button>
+    <div id="new-code-display" style="display:none;">
+      <div class="new-code-box">
+        <div class="new-code-label">Student access code — share this privately:</div>
+        <div class="new-code-value" id="new-code-value"></div>
+        <div class="new-code-hint">Student enters this code to see their homework</div>
+      </div>
+    </div>
+    <div class="modal-row" id="student-modal-btns">
+      <button class="sb-btn ghost" onclick="closeStudentModal()">Cancel</button>
+      <button class="sb-btn primary" onclick="saveStudent()">Save &amp; Generate Code</button>
+    </div>
+    <div id="student-modal-done" style="display:none;">
+      <div class="modal-row">
+        <button class="sb-btn primary" onclick="closeStudentModal()">Done</button>
+      </div>
     </div>
   </div>
 </div>
@@ -261,9 +282,7 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
   <div class="modal" style="max-width:560px;">
     <div class="modal-title" id="view-title">View File</div>
     <div id="view-body" style="margin-bottom:1rem;"></div>
-    <div class="modal-row">
-      <button class="sb-btn ghost" onclick="closeModal('view-modal')">Close</button>
-    </div>
+    <div class="modal-row"><button class="sb-btn ghost" onclick="closeModal('view-modal')">Close</button></div>
   </div>
 </div>
 
@@ -290,8 +309,8 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
     </div>
     <div class="sb-section teacher-only-section">
       <div class="sb-title">
-        Students
-        <button class="sb-add-btn" onclick="openModal('student-modal')" title="Add student">+</button>
+        Students &amp; Codes
+        <button class="sb-add-btn" onclick="openStudentModal()" title="Add student">+</button>
       </div>
       <div id="student-list"><div style="font-size:12px;color:var(--text3);">Loading...</div></div>
     </div>
@@ -344,8 +363,6 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 // ── Firebase ───────────────────────────────────────────────────────────────
 const firebaseConfig = {
@@ -360,21 +377,330 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function setSyncStatus(status, text) {
-  const pill = document.getElementById('sync-pill');
-  pill.className = 'sync-pill ' + status;
-  pill.textContent = text;
+function setSyncStatus(s,t){const p=document.getElementById('sync-pill');p.className='sync-pill '+s;p.textContent=t;}
+function fbSave(path,data){setSyncStatus('syncing','⟳ Saving...');return db.ref(path).set(data).then(()=>setSyncStatus('synced','✓ Synced')).catch(()=>setSyncStatus('error','✕ Error'));}
+function arrayToObj(arr){const o={};arr.forEach(i=>o[i.id]=i);return o;}
+function clearAllData(){db.ref('students').remove();db.ref('homeworks').remove();db.ref('submissions').remove();closeModal('clear-modal');}
+
+// ── Seed existing students into Firebase on first load ─────────────────────
+const SEED_STUDENTS = [
+  {id:1001, name:'Robbie S', code:'RS01'},
+  {id:1002, name:'Jordan A', code:'JA02'},
+  {id:1003, name:'Grace K',  code:'GK03'},
+  {id:1004, name:'Abigail A',code:'AA04'},
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let currentDeck="Small Talk", cards=[], idx=0, flipped=false;
+let mode="flash", quizCards=[], quizIdx=0, quizScore=0, quizTotal=0, quizAnswered=false;
+let isTeacher=false, studentName='';
+let homeworks=[], students=[], submissions=[];
+let editingStudentId=null, currentHwFile=null, currentSubmitFile=null, currentSubmitData=null, currentSubmitHwId=null;
+
+// ── Firebase listeners ─────────────────────────────────────────────────────
+function initFirebase() {
+  setSyncStatus('syncing','⟳ Connecting...');
+  db.ref('students').once('value', snap => {
+    if (!snap.val()) {
+      // First time — seed existing students
+      const obj = {};
+      SEED_STUDENTS.forEach(s => obj[s.id] = s);
+      db.ref('students').set(obj);
+    }
+  });
+  db.ref('students').on('value', snap => { students=snap.val()?Object.values(snap.val()):[];  renderStudentList(); renderHwBanner(); setSyncStatus('synced','✓ Synced'); }, ()=>setSyncStatus('error','✕ Offline'));
+  db.ref('homeworks').on('value', snap => { homeworks=snap.val()?Object.values(snap.val()):[];  renderHwList(); renderHwBanner(); });
+  db.ref('submissions').on('value', snap => { submissions=snap.val()?Object.values(snap.val()):[];  renderSubmissions(); renderStudentList(); renderHwBanner(); });
 }
 
-// ── Student codes ──────────────────────────────────────────────────────────
-const STUDENT_CODES = {
-  'RS01': 'Robbie S',
-  'JA02': 'Jordan A',
-  'GK03': 'Grace K',
-  'AA04': 'Abigail A',
-};
+// ── Code generation ────────────────────────────────────────────────────────
+function generateCode(name) {
+  const parts = name.trim().split(' ');
+  const initials = parts.map(p => p[0].toUpperCase()).join('').substring(0,2);
+  // Find next available number for these initials
+  const existing = students.filter(s => s.code && s.code.startsWith(initials));
+  const nums = existing.map(s => parseInt(s.code.replace(initials,''))||0);
+  const next = nums.length ? Math.max(...nums)+1 : 1;
+  return initials + String(next).padStart(2,'0');
+}
 
-// ── Vocabulary decks ───────────────────────────────────────────────────────
+function lookupStudentByCode(code) {
+  return students.find(s => s.code && s.code.toUpperCase() === code.toUpperCase());
+}
+
+// ── Password ───────────────────────────────────────────────────────────────
+function toggleTeacher() {
+  if (isTeacher) {
+    isTeacher=false;
+    document.getElementById('teacher-toggle').classList.remove('active');
+    document.getElementById('teacher-toggle').textContent='Teacher mode';
+    document.getElementById('app-layout').classList.remove('teacher-mode');
+    document.getElementById('hw-add-btn').style.display='none';
+    document.getElementById('name-bar').style.display='';
+    renderHwBanner(); renderHwList();
+  } else {
+    document.getElementById('password-input').value='';
+    document.getElementById('password-error').style.display='none';
+    openModal('password-modal');
+    setTimeout(()=>document.getElementById('password-input').focus(),100);
+  }
+}
+function checkPassword() {
+  if (document.getElementById('password-input').value==='Yang2026') {
+    closeModal('password-modal');
+    isTeacher=true;
+    document.getElementById('teacher-toggle').classList.add('active');
+    document.getElementById('teacher-toggle').textContent='✓ Teacher mode';
+    document.getElementById('app-layout').classList.add('teacher-mode');
+    document.getElementById('hw-add-btn').style.display='flex';
+    document.getElementById('name-bar').style.display='none';
+    renderHwBanner(); renderHwList();
+  } else {
+    document.getElementById('password-error').style.display='block';
+    document.getElementById('password-input').value='';
+    document.getElementById('password-input').focus();
+  }
+}
+
+// ── Student code entry ─────────────────────────────────────────────────────
+function confirmName() {
+  const val=document.getElementById('name-input').value.trim().toUpperCase();
+  const student=lookupStudentByCode(val);
+  if (!student) { document.getElementById('name-error').style.display='block'; return; }
+  document.getElementById('name-error').style.display='none';
+  studentName=student.name;
+  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
+  renderHwBanner();
+}
+function clearName() {
+  studentName='';
+  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Your code:</span><input id="name-input" placeholder="Enter your student code (e.g. RS01)" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button><div id="name-error" style="width:100%;font-size:12px;color:var(--red);display:none;">Invalid code. Please check your code and try again.</div>`;
+  renderHwBanner();
+}
+
+// ── Modals ─────────────────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function openStudentModal() {
+  editingStudentId=null;
+  document.getElementById('student-name').value='';
+  document.getElementById('student-modal-title').textContent='Add Student';
+  document.getElementById('new-code-display').style.display='none';
+  document.getElementById('student-modal-btns').style.display='flex';
+  document.getElementById('student-modal-done').style.display='none';
+  document.getElementById('student-name').disabled=false;
+  openModal('student-modal');
+}
+function closeStudentModal() {
+  closeModal('student-modal');
+  document.getElementById('new-code-display').style.display='none';
+  document.getElementById('student-modal-btns').style.display='flex';
+  document.getElementById('student-modal-done').style.display='none';
+  document.getElementById('student-name').disabled=false;
+}
+
+function openHwModal() {
+  const list=document.getElementById('assign-list');
+  if (!students.length) { list.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Add students first.</div>'; }
+  else { list.innerHTML=`<div class="assign-all-row"><input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" /><label for="assign-all">Select all students</label></div>`+students.map(s=>`<div class="assign-item"><input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" /><label for="assign-${s.id}">${s.name} <span style="color:var(--text3);font-size:11px;">(${s.code})</span></label></div>`).join(''); }
+  openModal('hw-modal');
+}
+function toggleAssignAll(cb){document.querySelectorAll('.assign-cb').forEach(c=>c.checked=cb.checked);}
+function updateAssignAll(){const cbs=[...document.querySelectorAll('.assign-cb')];const aa=document.getElementById('assign-all');if(aa)aa.checked=cbs.length&&cbs.every(c=>c.checked);}
+function getAssignedIds(){return[...document.querySelectorAll('.assign-cb:checked')].map(c=>parseInt(c.value));}
+
+// ── Homework ───────────────────────────────────────────────────────────────
+function hwFileChosen(input){const f=input.files[0];if(!f)return;currentHwFile=f;document.getElementById('hw-chosen').textContent='📎 '+f.name;}
+function saveHomework() {
+  const title=document.getElementById('hw-title').value.trim();
+  const date=document.getElementById('hw-date').value;
+  const link=document.getElementById('hw-link').value.trim();
+  const assignedIds=getAssignedIds();
+  if(!title){alert('Please enter a title.');return;}
+  const hw={id:Date.now(),title,date,link,fileName:null,fileData:null,fileType:null,assignedIds};
+  if(currentHwFile){const r=new FileReader();r.onload=e=>{hw.fileName=currentHwFile.name;hw.fileData=e.target.result;hw.fileType=currentHwFile.type;finishHw(hw);};r.readAsDataURL(currentHwFile);}
+  else{finishHw(hw);}
+}
+function finishHw(hw){
+  homeworks.push(hw);fbSave('homeworks',arrayToObj(homeworks));closeModal('hw-modal');
+  ['hw-title','hw-date','hw-link'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('hw-chosen').textContent='';document.getElementById('hw-file').value='';currentHwFile=null;
+}
+function deleteHw(id){homeworks=homeworks.filter(h=>h.id!==id);fbSave('homeworks',arrayToObj(homeworks));}
+function getAssignedNames(hw){
+  if(!hw.assignedIds||!hw.assignedIds.length)return'All students';
+  return hw.assignedIds.map(id=>{const s=students.find(s=>s.id===id);return s?s.name:'';}).filter(Boolean).join(', ');
+}
+function isAssignedToStudent(hw,name){
+  if(!name)return false;
+  if(!hw.assignedIds||!hw.assignedIds.length)return true;
+  return hw.assignedIds.some(id=>{const s=students.find(s=>s.id===id);return s&&s.name.toLowerCase()===name.toLowerCase();});
+}
+function renderHwList(){
+  const el=document.getElementById('hw-list');
+  if(!homeworks.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No assignments yet.</div>';return;}
+  el.innerHTML=homeworks.map(hw=>`
+    <div class="hw-item">
+      <div class="hw-item-title">${hw.title}</div>
+      ${hw.date?`<div class="hw-item-date">Due: ${fmtDate(hw.date)}</div>`:''}
+      <div class="hw-item-assigned">👥 ${getAssignedNames(hw)}</div>
+      <div class="hw-item-actions">
+        ${hw.link?`<a class="hw-link" href="${hw.link}" target="_blank">Open link</a>`:''}
+        ${hw.fileData?`<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>`:''}
+        <button class="hw-del" onclick="deleteHw(${hw.id})">Delete</button>
+      </div>
+    </div>`).join('');
+}
+function renderHwBanner(){
+  const el=document.getElementById('hw-banner');
+  if(isTeacher){el.innerHTML='';return;}
+  if(!studentName){el.innerHTML='';return;}
+  const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,studentName));
+  if(!myHw.length){el.innerHTML=`<div class="empty-hw"><div class="empty-hw-icon">📭</div><div class="empty-hw-text">No homework assigned to <strong>${studentName}</strong> yet.</div></div>`;return;}
+  el.innerHTML=myHw.map(hw=>{
+    const mySub=submissions.find(s=>s.hwId===hw.id&&s.studentName===studentName);
+    const myFeedback=mySub&&mySub.feedback?`<div class="feedback-box"><div class="feedback-label">Teacher feedback</div><div class="feedback-text">${mySub.feedback}</div></div>`:'';
+    return `<div class="submit-banner">
+      <div style="flex:1;">
+        <div class="submit-banner-title">📋 ${hw.title}</div>
+        ${hw.date?`<div class="submit-banner-text">Due: ${fmtDate(hw.date)}</div>`:''}
+        ${hw.fileData&&isAudio(hw.fileType)?`<audio controls src="${hw.fileData}"></audio>`:''}
+        ${hw.fileData&&!isAudio(hw.fileType)?`<button class="hw-link" style="margin-top:6px;" onclick="viewFile(${hw.id})">View file</button>`:''}
+        ${hw.link?`<a class="hw-link" style="margin-top:6px;display:inline-block;" href="${hw.link}" target="_blank">Open link</a>`:''}
+        ${myFeedback}
+        ${mySub?`<div style="font-size:11px;color:var(--green);margin-top:6px;">✓ Submitted on ${mySub.date}</div>`:''}
+      </div>
+      ${!mySub?`<button class="submit-hw-btn" onclick="openSubmitModal(${hw.id})">Submit work</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── Students ───────────────────────────────────────────────────────────────
+function saveStudent() {
+  const name=document.getElementById('student-name').value.trim();
+  if(!name){alert('Please enter a name.');return;}
+  let code;
+  if(editingStudentId!==null){
+    students=students.map(s=>s.id===editingStudentId?{...s,name}:s);
+    editingStudentId=null;
+    fbSave('students',arrayToObj(students));
+    closeStudentModal();
+  } else {
+    code=generateCode(name);
+    const newStudent={id:Date.now(),name,code};
+    students.push(newStudent);
+    fbSave('students',arrayToObj(students));
+    // Show the generated code
+    document.getElementById('student-name').disabled=true;
+    document.getElementById('new-code-value').textContent=code;
+    document.getElementById('new-code-display').style.display='block';
+    document.getElementById('student-modal-btns').style.display='none';
+    document.getElementById('student-modal-done').style.display='block';
+  }
+}
+function editStudent(id){
+  const s=students.find(s=>s.id===id);if(!s)return;
+  editingStudentId=id;
+  document.getElementById('student-name').value=s.name;
+  document.getElementById('student-name').disabled=false;
+  document.getElementById('student-modal-title').textContent='Edit Student';
+  document.getElementById('new-code-display').style.display='none';
+  document.getElementById('student-modal-btns').style.display='flex';
+  document.getElementById('student-modal-btns').querySelector('.sb-btn.primary').textContent='Save';
+  document.getElementById('student-modal-done').style.display='none';
+  openModal('student-modal');
+}
+function deleteStudent(id){students=students.filter(s=>s.id!==id);fbSave('students',arrayToObj(students));}
+function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
+function renderStudentList(){
+  const el=document.getElementById('student-list');
+  if(!students.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No students added yet.</div>';return;}
+  el.innerHTML=students.map(s=>{
+    const sub=submissions.find(sub=>sub.studentName.toLowerCase()===s.name.toLowerCase());
+    const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,s.name));
+    return `<div class="student-item">
+      <div class="student-avatar">${initials(s.name)}</div>
+      <div class="student-info">
+        <div class="student-name">${s.name}</div>
+        <div><span class="student-code-badge">${s.code||'—'}</span> <span style="font-size:10px;color:var(--text3);">${myHw.length} assignment${myHw.length!==1?'s':''}</span></div>
+      </div>
+      <span class="sub-badge ${sub?'':'pending'}">${sub?'Submitted':'Pending'}</span>
+      <button class="student-edit" onclick="editStudent(${s.id})">Edit</button>
+      <button class="student-del" onclick="deleteStudent(${s.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ── Submissions ────────────────────────────────────────────────────────────
+function openSubmitModal(hwId){
+  currentSubmitHwId=hwId;currentSubmitFile=null;currentSubmitData=null;
+  document.getElementById('submit-chosen').textContent='';document.getElementById('submit-file').value='';
+  const hw=homeworks.find(h=>h.id===hwId);
+  document.getElementById('submit-hw-name').textContent=hw?'Assignment: '+hw.title:'';
+  openModal('submit-modal');
+}
+function submitFileChosen(input){const f=input.files[0];if(!f)return;currentSubmitFile=f;document.getElementById('submit-chosen').textContent='📎 '+f.name;const r=new FileReader();r.onload=e=>{currentSubmitData=e.target.result;};r.readAsDataURL(f);}
+function doSubmit(){
+  if(!studentName){alert('Please enter your code at the top first.');closeModal('submit-modal');return;}
+  if(!currentSubmitFile){alert('Please upload a file.');return;}
+  const save=()=>{
+    const sub={id:Date.now(),studentName,hwId:currentSubmitHwId,fileName:currentSubmitFile.name,fileData:currentSubmitData,fileType:currentSubmitFile.type,date:new Date().toLocaleDateString(),feedback:''};
+    submissions.push(sub);fbSave('submissions',arrayToObj(submissions));closeModal('submit-modal');
+    alert('✅ Homework submitted successfully!');
+  };
+  currentSubmitData?save():setTimeout(save,600);
+}
+function renderSubmissions(){
+  const el=document.getElementById('submissions-list');
+  if(!submissions.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No submissions yet.</div>';return;}
+  el.innerHTML=submissions.map(sub=>{
+    const hw=homeworks.find(h=>h.id===sub.hwId);
+    return `<div class="sub-item">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <div class="student-avatar" style="background:var(--blue-light);color:var(--blue);">${initials(sub.studentName)}</div>
+        <div class="sub-item-name">${sub.studentName}</div>
+      </div>
+      <div class="sub-item-meta">${hw?hw.title+' · ':''}${sub.date}</div>
+      <button class="view-file-btn" onclick="viewSubmission(${sub.id})">▶ View / Play</button>
+      <button class="feedback-btn" onclick="toggleFeedbackForm(${sub.id})">✏️ Feedback</button>
+      ${sub.feedback?`<div class="feedback-box" style="margin-top:8px;"><div class="feedback-label">Your feedback</div><div class="feedback-text">${sub.feedback}</div></div>`:''}
+      <div id="feedback-form-${sub.id}" style="display:none;">
+        <textarea class="feedback-input" id="feedback-text-${sub.id}" placeholder="Write your feedback here...">${sub.feedback||''}</textarea>
+        <button class="feedback-save-btn" onclick="saveFeedback(${sub.id})">Save feedback</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleFeedbackForm(subId){const f=document.getElementById('feedback-form-'+subId);f.style.display=f.style.display==='none'?'block':'none';}
+function saveFeedback(subId){
+  const text=document.getElementById('feedback-text-'+subId).value.trim();
+  submissions=submissions.map(s=>s.id===subId?{...s,feedback:text}:s);
+  fbSave('submissions',arrayToObj(submissions));
+}
+
+// ── File viewer ─────────────────────────────────────────────────────────────
+const AUDIO_TYPES=['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm'];
+function isAudio(t){return t&&(AUDIO_TYPES.includes(t)||t.startsWith('audio/'));}
+function isImage(t){return t&&t.startsWith('image/');}
+function isPdf(t){return t==='application/pdf';}
+function viewFile(hwId){const hw=homeworks.find(h=>h.id===hwId);if(!hw||!hw.fileData)return;showViewer(hw.title,hw.fileData,hw.fileType,hw.fileName);}
+function viewSubmission(subId){const sub=submissions.find(s=>s.id===subId);if(!sub)return;showViewer(sub.studentName+"'s work",sub.fileData,sub.fileType,sub.fileName);}
+function showViewer(title,dataUrl,fileType,fileName){
+  document.getElementById('view-title').textContent=title;
+  let body='';
+  if(isAudio(fileType)){body=`<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div><audio controls style="width:100%;" src="${dataUrl}"></audio>`;}
+  else if(isImage(fileType)){body=`<img src="${dataUrl}" style="max-width:100%;border-radius:8px;" />`;}
+  else if(isPdf(fileType)){body=`<iframe src="${dataUrl}" style="width:100%;height:420px;border:none;border-radius:8px;"></iframe>`;}
+  else{body=`<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p><a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`;}
+  document.getElementById('view-body').innerHTML=body;
+  openModal('view-modal');
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function fmtDate(s){if(!s)return'';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+
+// ── Vocab decks ────────────────────────────────────────────────────────────
 const DECKS = {
   "Small Talk": [
     {ch:"吃了吗？",py:"Chī le ma?",en:"Have you eaten?",type:"vocab"},
@@ -482,252 +808,6 @@ const DECKS = {
     {ch:"我过了海关以后打车去酒店。",py:"wǒ guò le hǎi guān yǐ hòu dǎ dī qù jiǔ diàn",en:"After customs, I take a taxi to the hotel.",type:"sentence"},
   ],
 };
-
-// ── State ──────────────────────────────────────────────────────────────────
-let currentDeck="Small Talk", cards=[], idx=0, flipped=false;
-let mode="flash", quizCards=[], quizIdx=0, quizScore=0, quizTotal=0, quizAnswered=false;
-let isTeacher=false, studentName='';
-let homeworks=[], students=[], submissions=[];
-let editingStudentId=null, currentHwFile=null, currentSubmitFile=null, currentSubmitData=null, currentSubmitHwId=null;
-
-// ── Firebase listeners ─────────────────────────────────────────────────────
-function initFirebase() {
-  setSyncStatus('syncing', '⟳ Connecting...');
-  db.ref('students').on('value', snap => { students = snap.val() ? Object.values(snap.val()) : []; renderStudentList(); renderHwBanner(); setSyncStatus('synced', '✓ Synced'); }, () => setSyncStatus('error', '✕ Offline'));
-  db.ref('homeworks').on('value', snap => { homeworks = snap.val() ? Object.values(snap.val()) : []; renderHwList(); renderHwBanner(); });
-  db.ref('submissions').on('value', snap => { submissions = snap.val() ? Object.values(snap.val()) : []; renderSubmissions(); renderStudentList(); renderHwBanner(); });
-}
-function fbSave(path, data) { setSyncStatus('syncing','⟳ Saving...'); return db.ref(path).set(data).then(()=>setSyncStatus('synced','✓ Synced')).catch(()=>setSyncStatus('error','✕ Error')); }
-function arrayToObj(arr) { const o={}; arr.forEach(i=>o[i.id]=i); return o; }
-function clearAllData() { db.ref('students').remove(); db.ref('homeworks').remove(); db.ref('submissions').remove(); closeModal('clear-modal'); }
-
-// ── Password ───────────────────────────────────────────────────────────────
-function toggleTeacher() {
-  if (isTeacher) {
-    isTeacher=false;
-    document.getElementById('teacher-toggle').classList.remove('active');
-    document.getElementById('teacher-toggle').textContent='Teacher mode';
-    document.getElementById('app-layout').classList.remove('teacher-mode');
-    document.getElementById('hw-add-btn').style.display='none';
-    document.getElementById('name-bar').style.display='';
-    renderHwBanner(); renderHwList();
-  } else {
-    document.getElementById('password-input').value='';
-    document.getElementById('password-error').style.display='none';
-    openModal('password-modal');
-    setTimeout(()=>document.getElementById('password-input').focus(),100);
-  }
-}
-function checkPassword() {
-  if (document.getElementById('password-input').value==='Yang2026') {
-    closeModal('password-modal');
-    isTeacher=true;
-    document.getElementById('teacher-toggle').classList.add('active');
-    document.getElementById('teacher-toggle').textContent='✓ Teacher mode';
-    document.getElementById('app-layout').classList.add('teacher-mode');
-    document.getElementById('hw-add-btn').style.display='flex';
-    document.getElementById('name-bar').style.display='none';
-    renderHwBanner(); renderHwList();
-  } else {
-    document.getElementById('password-error').style.display='block';
-    document.getElementById('password-input').value='';
-    document.getElementById('password-input').focus();
-  }
-}
-
-// ── Student code ───────────────────────────────────────────────────────────
-function confirmName() {
-  const val=document.getElementById('name-input').value.trim().toUpperCase();
-  const name=STUDENT_CODES[val];
-  if (!name) { document.getElementById('name-error').style.display='block'; return; }
-  document.getElementById('name-error').style.display='none';
-  studentName=name;
-  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
-  renderHwBanner();
-}
-function clearName() {
-  studentName='';
-  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Your code:</span><input id="name-input" placeholder="Enter your student code (e.g. RS01)" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button><div id="name-error" style="width:100%;font-size:12px;color:var(--red);display:none;">Invalid code. Please check your code and try again.</div>`;
-  renderHwBanner();
-}
-
-// ── Modals ─────────────────────────────────────────────────────────────────
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function openHwModal() {
-  const list=document.getElementById('assign-list');
-  if (!students.length) { list.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Add students first.</div>'; }
-  else { list.innerHTML=`<div class="assign-all-row"><input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" /><label for="assign-all">Select all students</label></div>`+students.map(s=>`<div class="assign-item"><input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" /><label for="assign-${s.id}">${s.name}</label></div>`).join(''); }
-  openModal('hw-modal');
-}
-function toggleAssignAll(cb) { document.querySelectorAll('.assign-cb').forEach(c=>c.checked=cb.checked); }
-function updateAssignAll() { const cbs=[...document.querySelectorAll('.assign-cb')]; const aa=document.getElementById('assign-all'); if(aa)aa.checked=cbs.length&&cbs.every(c=>c.checked); }
-function getAssignedIds() { return [...document.querySelectorAll('.assign-cb:checked')].map(c=>parseInt(c.value)); }
-
-// ── Homework ───────────────────────────────────────────────────────────────
-function hwFileChosen(input) { const f=input.files[0]; if(!f)return; currentHwFile=f; document.getElementById('hw-chosen').textContent='📎 '+f.name; }
-function saveHomework() {
-  const title=document.getElementById('hw-title').value.trim();
-  const date=document.getElementById('hw-date').value;
-  const link=document.getElementById('hw-link').value.trim();
-  const assignedIds=getAssignedIds();
-  if(!title){alert('Please enter a title.');return;}
-  const hw={id:Date.now(),title,date,link,fileName:null,fileData:null,fileType:null,assignedIds};
-  if(currentHwFile){const r=new FileReader();r.onload=e=>{hw.fileName=currentHwFile.name;hw.fileData=e.target.result;hw.fileType=currentHwFile.type;finishHw(hw);};r.readAsDataURL(currentHwFile);}
-  else{finishHw(hw);}
-}
-function finishHw(hw) {
-  homeworks.push(hw); fbSave('homeworks',arrayToObj(homeworks)); closeModal('hw-modal');
-  ['hw-title','hw-date','hw-link'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('hw-chosen').textContent=''; document.getElementById('hw-file').value=''; currentHwFile=null;
-}
-function deleteHw(id) { homeworks=homeworks.filter(h=>h.id!==id); fbSave('homeworks',arrayToObj(homeworks)); }
-function getAssignedNames(hw) {
-  if(!hw.assignedIds||!hw.assignedIds.length) return 'All students';
-  return hw.assignedIds.map(id=>{const s=students.find(s=>s.id===id);return s?s.name:'';}).filter(Boolean).join(', ');
-}
-function isAssignedToStudent(hw,name) {
-  if(!name)return false;
-  if(!hw.assignedIds||!hw.assignedIds.length)return true;
-  return hw.assignedIds.some(id=>{const s=students.find(s=>s.id===id);return s&&s.name.toLowerCase()===name.toLowerCase();});
-}
-function renderHwList() {
-  const el=document.getElementById('hw-list');
-  if(!homeworks.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No assignments yet.</div>';return;}
-  el.innerHTML=homeworks.map(hw=>`
-    <div class="hw-item">
-      <div class="hw-item-title">${hw.title}</div>
-      ${hw.date?`<div class="hw-item-date">Due: ${fmtDate(hw.date)}</div>`:''}
-      <div class="hw-item-assigned">👥 ${getAssignedNames(hw)}</div>
-      <div class="hw-item-actions">
-        ${hw.link?`<a class="hw-link" href="${hw.link}" target="_blank">Open link</a>`:''}
-        ${hw.fileData?`<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>`:''}
-        <button class="hw-del" onclick="deleteHw(${hw.id})">Delete</button>
-      </div>
-    </div>`).join('');
-}
-function renderHwBanner() {
-  const el=document.getElementById('hw-banner');
-  if(isTeacher){el.innerHTML='';return;}
-  if(!studentName){el.innerHTML='';return;}
-  const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,studentName));
-  if(!myHw.length){el.innerHTML=`<div class="empty-hw"><div class="empty-hw-icon">📭</div><div class="empty-hw-text">No homework assigned to <strong>${studentName}</strong> yet.</div></div>`;return;}
-  el.innerHTML=myHw.map(hw=>{
-    const mySub=submissions.find(s=>s.hwId===hw.id&&s.studentName===studentName);
-    const myFeedback=mySub&&mySub.feedback?`<div class="feedback-box"><div class="feedback-label">Teacher feedback</div><div class="feedback-text">${mySub.feedback}</div></div>`:'';
-    return `<div class="submit-banner">
-      <div style="flex:1;">
-        <div class="submit-banner-title">📋 ${hw.title}</div>
-        ${hw.date?`<div class="submit-banner-text">Due: ${fmtDate(hw.date)}</div>`:''}
-        ${hw.fileData&&isAudio(hw.fileType)?`<audio controls src="${hw.fileData}"></audio>`:''}
-        ${hw.fileData&&!isAudio(hw.fileType)?`<button class="hw-link" style="margin-top:6px;" onclick="viewFile(${hw.id})">View file</button>`:''}
-        ${hw.link?`<a class="hw-link" style="margin-top:6px;display:inline-block;" href="${hw.link}" target="_blank">Open link</a>`:''}
-        ${myFeedback}
-        ${mySub?`<div style="font-size:11px;color:var(--green);margin-top:6px;">✓ Submitted on ${mySub.date}</div>`:''}
-      </div>
-      ${!mySub?`<button class="submit-hw-btn" onclick="openSubmitModal(${hw.id})">Submit work</button>`:''}
-    </div>`;
-  }).join('');
-}
-
-// ── Students ───────────────────────────────────────────────────────────────
-function saveStudent() {
-  const name=document.getElementById('student-name').value.trim(); if(!name){alert('Please enter a name.');return;}
-  if(editingStudentId!==null){students=students.map(s=>s.id===editingStudentId?{...s,name}:s);editingStudentId=null;document.getElementById('student-modal-title').textContent='Add Student';}
-  else{students.push({id:Date.now(),name});}
-  fbSave('students',arrayToObj(students)); closeModal('student-modal'); document.getElementById('student-name').value='';
-}
-function editStudent(id){const s=students.find(s=>s.id===id);if(!s)return;editingStudentId=id;document.getElementById('student-name').value=s.name;document.getElementById('student-modal-title').textContent='Edit Student';openModal('student-modal');}
-function deleteStudent(id){students=students.filter(s=>s.id!==id);fbSave('students',arrayToObj(students));}
-function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
-function renderStudentList() {
-  const el=document.getElementById('student-list');
-  if(!students.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No students added yet.</div>';return;}
-  el.innerHTML=students.map(s=>{
-    const sub=submissions.find(sub=>sub.studentName.toLowerCase()===s.name.toLowerCase());
-    const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,s.name));
-    return `<div class="student-item">
-      <div class="student-avatar">${initials(s.name)}</div>
-      <div class="student-name">${s.name}<div style="font-size:10px;color:var(--text3);">${myHw.length} assignment${myHw.length!==1?'s':''}</div></div>
-      <span class="sub-badge ${sub?'':'pending'}">${sub?'Submitted':'Pending'}</span>
-      <button class="student-edit" onclick="editStudent(${s.id})">Edit</button>
-      <button class="student-del" onclick="deleteStudent(${s.id})">✕</button>
-    </div>`;
-  }).join('');
-}
-
-// ── Submissions ────────────────────────────────────────────────────────────
-function openSubmitModal(hwId) {
-  currentSubmitHwId=hwId; currentSubmitFile=null; currentSubmitData=null;
-  document.getElementById('submit-chosen').textContent=''; document.getElementById('submit-file').value='';
-  const hw=homeworks.find(h=>h.id===hwId);
-  document.getElementById('submit-hw-name').textContent=hw?'Assignment: '+hw.title:'';
-  openModal('submit-modal');
-}
-function submitFileChosen(input){const f=input.files[0];if(!f)return;currentSubmitFile=f;document.getElementById('submit-chosen').textContent='📎 '+f.name;const r=new FileReader();r.onload=e=>{currentSubmitData=e.target.result;};r.readAsDataURL(f);}
-function doSubmit(){
-  if(!studentName){alert('Please enter your code at the top first.');closeModal('submit-modal');return;}
-  if(!currentSubmitFile){alert('Please upload a file.');return;}
-  const save=()=>{
-    const sub={id:Date.now(),studentName,hwId:currentSubmitHwId,fileName:currentSubmitFile.name,fileData:currentSubmitData,fileType:currentSubmitFile.type,date:new Date().toLocaleDateString(),feedback:''};
-    submissions.push(sub); fbSave('submissions',arrayToObj(submissions)); closeModal('submit-modal');
-    alert('✅ Homework submitted successfully!');
-  };
-  currentSubmitData?save():setTimeout(save,600);
-}
-
-function renderSubmissions() {
-  const el=document.getElementById('submissions-list');
-  if(!submissions.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No submissions yet.</div>';return;}
-  el.innerHTML=submissions.map(sub=>{
-    const hw=homeworks.find(h=>h.id===sub.hwId);
-    return `<div class="sub-item">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-        <div class="student-avatar" style="background:var(--blue-light);color:var(--blue);">${initials(sub.studentName)}</div>
-        <div class="sub-item-name">${sub.studentName}</div>
-      </div>
-      <div class="sub-item-meta">${hw?hw.title+' · ':''}${sub.date}</div>
-      <button class="view-file-btn" onclick="viewSubmission(${sub.id})">▶ View / Play</button>
-      <button class="feedback-btn" onclick="openFeedback(${sub.id})">✏️ Feedback</button>
-      ${sub.feedback?`<div class="feedback-box" style="margin-top:8px;"><div class="feedback-label">Your feedback</div><div class="feedback-text">${sub.feedback}</div></div>`:''}
-      <div id="feedback-form-${sub.id}" style="display:none;">
-        <textarea class="feedback-input" id="feedback-text-${sub.id}" placeholder="Write your feedback here...">${sub.feedback||''}</textarea>
-        <button class="feedback-save-btn" onclick="saveFeedback(${sub.id})">Save feedback</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function openFeedback(subId) {
-  const form=document.getElementById('feedback-form-'+subId);
-  form.style.display=form.style.display==='none'?'block':'none';
-}
-function saveFeedback(subId) {
-  const text=document.getElementById('feedback-text-'+subId).value.trim();
-  submissions=submissions.map(s=>s.id===subId?{...s,feedback:text}:s);
-  fbSave('submissions',arrayToObj(submissions));
-}
-
-// ── File viewer ─────────────────────────────────────────────────────────────
-const AUDIO_TYPES=['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm'];
-function isAudio(t){return t&&(AUDIO_TYPES.includes(t)||t.startsWith('audio/'));}
-function isImage(t){return t&&t.startsWith('image/');}
-function isPdf(t){return t==='application/pdf';}
-function viewFile(hwId){const hw=homeworks.find(h=>h.id===hwId);if(!hw||!hw.fileData)return;showViewer(hw.title,hw.fileData,hw.fileType,hw.fileName);}
-function viewSubmission(subId){const sub=submissions.find(s=>s.id===subId);if(!sub)return;showViewer(sub.studentName+"'s work",sub.fileData,sub.fileType,sub.fileName);}
-function showViewer(title,dataUrl,fileType,fileName){
-  document.getElementById('view-title').textContent=title;
-  let body='';
-  if(isAudio(fileType)){body=`<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div><audio controls style="width:100%;" src="${dataUrl}"></audio>`;}
-  else if(isImage(fileType)){body=`<img src="${dataUrl}" style="max-width:100%;border-radius:8px;" />`;}
-  else if(isPdf(fileType)){body=`<iframe src="${dataUrl}" style="width:100%;height:420px;border:none;border-radius:8px;"></iframe>`;}
-  else{body=`<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p><a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`;}
-  document.getElementById('view-body').innerHTML=body;
-  openModal('view-modal');
-}
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-function fmtDate(s){if(!s)return'';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 
 // ── Speech ─────────────────────────────────────────────────────────────────
 function speak(text){
