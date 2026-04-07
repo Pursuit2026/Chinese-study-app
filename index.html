@@ -33,31 +33,23 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .clear-btn:hover { background: var(--red-light); }
 .teacher-mode .clear-btn { display: inline-block; }
 .main { max-width: 700px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; width: 100%; }
-
-/* Sync status */
 .sync-pill { font-size: 11px; padding: 3px 10px; border-radius: 100px; }
 .sync-pill.synced { background: var(--green-light); color: var(--green); }
 .sync-pill.syncing { background: var(--amber-light); color: var(--amber); }
 .sync-pill.error { background: var(--red-light); color: var(--red); }
-
-/* Sidebar */
 .sb-section { border-bottom: 1px solid var(--border); padding: 1rem; }
 .sb-section:last-child { border-bottom: none; }
 .sb-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text3); margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between; }
 .sb-add-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 15px; color: var(--text2); display: flex; align-items: center; justify-content: center; line-height: 1; transition: all 0.15s; }
 .sb-add-btn:hover { background: var(--teal); color: white; border-color: var(--teal); }
-
-/* Student name bar */
 .name-entry-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.name-entry-bar input { flex: 1; min-width: 160px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); outline: none; }
+.name-entry-bar input { flex: 1; min-width: 160px; padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); outline: none; text-transform: uppercase; }
 .name-entry-bar input:focus { border-color: var(--teal); }
 .name-entry-label { font-size: 13px; color: var(--text2); white-space: nowrap; }
 .name-confirm-btn { padding: 7px 16px; background: var(--teal); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; }
 .name-confirm-btn:hover { opacity: 0.85; }
 .name-tag { display: flex; align-items: center; gap: 6px; background: var(--teal-light); color: var(--teal); padding: 5px 12px; border-radius: 100px; font-size: 13px; font-weight: 500; }
 .name-tag button { background: none; border: none; cursor: pointer; color: var(--teal); font-size: 14px; line-height: 1; padding: 0; }
-
-/* Homework items */
 .hw-item { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; border: 1px solid var(--border); }
 .hw-item-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
 .hw-item-date { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
@@ -68,8 +60,6 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .hw-del { font-size: 12px; padding: 3px 8px; border-radius: 100px; border: 1px solid transparent; background: transparent; color: var(--text3); cursor: pointer; font-family: 'DM Sans', sans-serif; display: none; }
 .teacher-mode .hw-del { display: inline-block; }
 .hw-del:hover { color: var(--red); border-color: var(--red-light); background: var(--red-light); }
-
-/* Student items */
 .student-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .student-item:last-child { border-bottom: none; }
 .student-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--teal-light); color: var(--teal); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -79,8 +69,6 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .student-del:hover { color: var(--red); background: var(--red-light); }
 .sub-badge { font-size: 10px; padding: 2px 7px; border-radius: 100px; background: var(--green-light); color: var(--green); font-weight: 500; white-space: nowrap; }
 .sub-badge.pending { background: var(--amber-light); color: var(--amber); }
-
-/* Assign checklist */
 .assign-list { max-height: 180px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 12px; }
 .assign-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--border); cursor: pointer; }
 .assign-item:last-child { border-bottom: none; }
@@ -89,22 +77,29 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .assign-item label { font-size: 13px; cursor: pointer; flex: 1; }
 .assign-all-row { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: var(--surface2); border-bottom: 1px solid var(--border); }
 .assign-all-row label { font-size: 12px; color: var(--text2); cursor: pointer; }
-
-/* Submit banner */
-.submit-banner { background: var(--blue-light); border: 1px solid #b5d4f4; border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.submit-banner { background: var(--blue-light); border: 1px solid #b5d4f4; border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 10px; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .submit-banner-title { font-weight: 500; font-size: 14px; color: var(--blue); margin-bottom: 2px; }
 .submit-banner-text { font-size: 12px; color: var(--blue); }
-.submit-hw-btn { padding: 7px 16px; background: var(--blue); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; white-space: nowrap; }
+.submit-hw-btn { padding: 7px 16px; background: var(--blue); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
 .submit-hw-btn:hover { opacity: 0.85; }
 
-/* Submissions */
+/* Feedback */
+.feedback-box { background: var(--green-light); border: 1px solid #c0dd97; border-radius: var(--radius-sm); padding: 10px 12px; margin-top: 8px; }
+.feedback-label { font-size: 11px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.feedback-text { font-size: 13px; color: #27500A; line-height: 1.5; }
+.feedback-btn { font-size: 12px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--teal); cursor: pointer; font-family: 'DM Sans', sans-serif; display: none; }
+.teacher-mode .feedback-btn { display: inline-block; }
+.feedback-btn:hover { background: var(--teal-light); }
+.feedback-input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surface); outline: none; margin-top: 6px; resize: vertical; min-height: 70px; }
+.feedback-input:focus { border-color: var(--teal); }
+.feedback-save-btn { margin-top: 6px; padding: 5px 14px; background: var(--teal); color: white; border: none; border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.feedback-save-btn:hover { opacity: 0.85; }
+
 .sub-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; }
 .sub-item-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
 .sub-item-meta { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
-.view-file-btn { font-size: 12px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--blue); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.view-file-btn { font-size: 12px; padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--blue); cursor: pointer; font-family: 'DM Sans', sans-serif; margin-right: 4px; }
 .view-file-btn:hover { background: var(--blue-light); }
-
-/* Modal */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; width: 100%; max-width: 480px; border: 1px solid var(--border); max-height: 92vh; overflow-y: auto; }
@@ -123,12 +118,8 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .sb-btn.primary:hover { opacity: 0.85; }
 .sb-btn.ghost { background: transparent; color: var(--text2); }
 .sb-btn.ghost:hover { background: var(--surface2); }
-
-/* Teacher-only */
 .teacher-only-section { display: none; }
 .teacher-mode .teacher-only-section { display: block; }
-
-/* Tabs & flashcard */
 .tabs-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
 .tab { padding: 6px 14px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; cursor: pointer; background: transparent; color: var(--text2); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .tab:hover:not(.active) { background: var(--surface2); }
@@ -183,7 +174,6 @@ header { background: var(--surface); border-bottom: 1px solid var(--border); pad
 .empty-hw-icon { font-size: 32px; margin-bottom: 0.5rem; }
 .empty-hw-text { font-size: 14px; color: var(--text2); }
 audio { width: 100%; border-radius: 8px; margin-top: 8px; }
-
 @media (max-width: 640px) {
   .sidebar { width: 100%; min-width: unset; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
   .layout { flex-direction: column; }
@@ -193,6 +183,20 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
 </style>
 </head>
 <body>
+
+<!-- Password Modal -->
+<div class="modal-overlay" id="password-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-title">Teacher mode</div>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">Enter your teacher password to continue.</p>
+    <input class="modal-input" type="password" id="password-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPassword()" />
+    <div id="password-error" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none;">Incorrect password. Please try again.</div>
+    <div class="modal-row">
+      <button class="sb-btn ghost" onclick="closeModal('password-modal')">Cancel</button>
+      <button class="sb-btn primary" onclick="checkPassword()">Enter</button>
+    </div>
+  </div>
+</div>
 
 <!-- Add Homework Modal -->
 <div class="modal-overlay" id="hw-modal">
@@ -267,7 +271,7 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
 <div class="modal-overlay" id="clear-modal">
   <div class="modal" style="max-width:360px;">
     <div class="modal-title">Clear all data?</div>
-    <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;">This will permanently delete all students, homework, and submissions from the cloud. This cannot be undone.</p>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;">This will permanently delete all students, homework, and submissions from the cloud.</p>
     <div class="modal-row">
       <button class="sb-btn ghost" onclick="closeModal('clear-modal')">Cancel</button>
       <button class="sb-btn" style="background:var(--red);color:white;border-color:var(--red);" onclick="clearAllData()">Yes, clear everything</button>
@@ -308,9 +312,10 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
     </header>
     <div class="main">
       <div id="name-bar" class="name-entry-bar">
-        <span class="name-entry-label">Your name:</span>
-        <input id="name-input" placeholder="Enter your name to see your homework" onkeydown="if(event.key==='Enter')confirmName()" />
+        <span class="name-entry-label">Your code:</span>
+        <input id="name-input" placeholder="Enter your student code (e.g. RS01)" onkeydown="if(event.key==='Enter')confirmName()" />
         <button class="name-confirm-btn" onclick="confirmName()">Go</button>
+        <div id="name-error" style="width:100%;font-size:12px;color:var(--red);display:none;">Invalid code. Please check your code and try again.</div>
       </div>
       <div id="hw-banner"></div>
       <div class="tabs-wrap" id="tabs"></div>
@@ -339,12 +344,10 @@ audio { width: 100%; border-radius: 8px; margin-top: 8px; }
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 <script>
-// ── Firebase init ──────────────────────────────────────────────────────────
+// ── Firebase ───────────────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyBM2HJ7Go-Uq3gS9OBKHQgIb4Zrt8zdq74",
   authDomain: "chinese-study-lab-app.firebaseapp.com",
@@ -362,6 +365,14 @@ function setSyncStatus(status, text) {
   pill.className = 'sync-pill ' + status;
   pill.textContent = text;
 }
+
+// ── Student codes ──────────────────────────────────────────────────────────
+const STUDENT_CODES = {
+  'RS01': 'Robbie S',
+  'JA02': 'Jordan A',
+  'GK03': 'Grace K',
+  'AA04': 'Abigail A',
+};
 
 // ── Vocabulary decks ───────────────────────────────────────────────────────
 const DECKS = {
@@ -482,181 +493,159 @@ let editingStudentId=null, currentHwFile=null, currentSubmitFile=null, currentSu
 // ── Firebase listeners ─────────────────────────────────────────────────────
 function initFirebase() {
   setSyncStatus('syncing', '⟳ Connecting...');
+  db.ref('students').on('value', snap => { students = snap.val() ? Object.values(snap.val()) : []; renderStudentList(); renderHwBanner(); setSyncStatus('synced', '✓ Synced'); }, () => setSyncStatus('error', '✕ Offline'));
+  db.ref('homeworks').on('value', snap => { homeworks = snap.val() ? Object.values(snap.val()) : []; renderHwList(); renderHwBanner(); });
+  db.ref('submissions').on('value', snap => { submissions = snap.val() ? Object.values(snap.val()) : []; renderSubmissions(); renderStudentList(); renderHwBanner(); });
+}
+function fbSave(path, data) { setSyncStatus('syncing','⟳ Saving...'); return db.ref(path).set(data).then(()=>setSyncStatus('synced','✓ Synced')).catch(()=>setSyncStatus('error','✕ Error')); }
+function arrayToObj(arr) { const o={}; arr.forEach(i=>o[i.id]=i); return o; }
+function clearAllData() { db.ref('students').remove(); db.ref('homeworks').remove(); db.ref('submissions').remove(); closeModal('clear-modal'); }
 
-  db.ref('students').on('value', snap => {
-    students = snap.val() ? Object.values(snap.val()) : [];
-    renderStudentList();
-    renderHwBanner();
-    setSyncStatus('synced', '✓ Synced');
-  }, () => setSyncStatus('error', '✕ Offline'));
-
-  db.ref('homeworks').on('value', snap => {
-    homeworks = snap.val() ? Object.values(snap.val()) : [];
-    renderHwList();
-    renderHwBanner();
-  });
-
-  db.ref('submissions').on('value', snap => {
-    submissions = snap.val() ? Object.values(snap.val()) : [];
-    renderSubmissions();
-    renderStudentList();
-  });
+// ── Password ───────────────────────────────────────────────────────────────
+function toggleTeacher() {
+  if (isTeacher) {
+    isTeacher=false;
+    document.getElementById('teacher-toggle').classList.remove('active');
+    document.getElementById('teacher-toggle').textContent='Teacher mode';
+    document.getElementById('app-layout').classList.remove('teacher-mode');
+    document.getElementById('hw-add-btn').style.display='none';
+    document.getElementById('name-bar').style.display='';
+    renderHwBanner(); renderHwList();
+  } else {
+    document.getElementById('password-input').value='';
+    document.getElementById('password-error').style.display='none';
+    openModal('password-modal');
+    setTimeout(()=>document.getElementById('password-input').focus(),100);
+  }
+}
+function checkPassword() {
+  if (document.getElementById('password-input').value==='Yang2026') {
+    closeModal('password-modal');
+    isTeacher=true;
+    document.getElementById('teacher-toggle').classList.add('active');
+    document.getElementById('teacher-toggle').textContent='✓ Teacher mode';
+    document.getElementById('app-layout').classList.add('teacher-mode');
+    document.getElementById('hw-add-btn').style.display='flex';
+    document.getElementById('name-bar').style.display='none';
+    renderHwBanner(); renderHwList();
+  } else {
+    document.getElementById('password-error').style.display='block';
+    document.getElementById('password-input').value='';
+    document.getElementById('password-input').focus();
+  }
 }
 
-function fbSave(path, data) {
-  setSyncStatus('syncing', '⟳ Saving...');
-  return db.ref(path).set(data)
-    .then(() => setSyncStatus('synced', '✓ Synced'))
-    .catch(() => setSyncStatus('error', '✕ Error saving'));
-}
-
-function arrayToObj(arr) {
-  const obj = {};
-  arr.forEach(item => { obj[item.id] = item; });
-  return obj;
-}
-
-function clearAllData() {
-  db.ref('students').remove();
-  db.ref('homeworks').remove();
-  db.ref('submissions').remove();
-  closeModal('clear-modal');
-}
-
-// ── Student name ───────────────────────────────────────────────────────────
+// ── Student code ───────────────────────────────────────────────────────────
 function confirmName() {
-  const val = document.getElementById('name-input').value.trim(); if(!val) return;
-  studentName = val;
-  document.getElementById('name-bar').innerHTML = `<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
+  const val=document.getElementById('name-input').value.trim().toUpperCase();
+  const name=STUDENT_CODES[val];
+  if (!name) { document.getElementById('name-error').style.display='block'; return; }
+  document.getElementById('name-error').style.display='none';
+  studentName=name;
+  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
   renderHwBanner();
 }
 function clearName() {
-  studentName = '';
-  document.getElementById('name-bar').innerHTML = `<span class="name-entry-label">Your name:</span><input id="name-input" placeholder="Enter your name to see your homework" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button>`;
+  studentName='';
+  document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Your code:</span><input id="name-input" placeholder="Enter your student code (e.g. RS01)" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button><div id="name-error" style="width:100%;font-size:12px;color:var(--red);display:none;">Invalid code. Please check your code and try again.</div>`;
   renderHwBanner();
-}
-
-// ── Teacher toggle ─────────────────────────────────────────────────────────
-function toggleTeacher() {
-  isTeacher = !isTeacher;
-  const btn = document.getElementById('teacher-toggle');
-  btn.classList.toggle('active', isTeacher);
-  btn.textContent = isTeacher ? '✓ Teacher mode' : 'Teacher mode';
-  document.getElementById('app-layout').classList.toggle('teacher-mode', isTeacher);
-  document.getElementById('hw-add-btn').style.display = isTeacher ? 'flex' : 'none';
-  document.getElementById('name-bar').style.display = isTeacher ? 'none' : '';
-  renderHwBanner(); renderHwList();
 }
 
 // ── Modals ─────────────────────────────────────────────────────────────────
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
 function openHwModal() {
-  const list = document.getElementById('assign-list');
-  if (!students.length) {
-    list.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text3);">Add students first.</div>';
-  } else {
-    list.innerHTML = `<div class="assign-all-row"><input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" /><label for="assign-all">Select all students</label></div>`
-      + students.map(s => `<div class="assign-item"><input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" /><label for="assign-${s.id}">${s.name}</label></div>`).join('');
-  }
+  const list=document.getElementById('assign-list');
+  if (!students.length) { list.innerHTML='<div style="padding:10px;font-size:12px;color:var(--text3);">Add students first.</div>'; }
+  else { list.innerHTML=`<div class="assign-all-row"><input type="checkbox" id="assign-all" onchange="toggleAssignAll(this)" /><label for="assign-all">Select all students</label></div>`+students.map(s=>`<div class="assign-item"><input type="checkbox" id="assign-${s.id}" value="${s.id}" class="assign-cb" onchange="updateAssignAll()" /><label for="assign-${s.id}">${s.name}</label></div>`).join(''); }
   openModal('hw-modal');
 }
-function toggleAssignAll(cb) { document.querySelectorAll('.assign-cb').forEach(c => c.checked = cb.checked); }
-function updateAssignAll() { const cbs = [...document.querySelectorAll('.assign-cb')]; const aa = document.getElementById('assign-all'); if(aa) aa.checked = cbs.length && cbs.every(c => c.checked); }
-function getAssignedIds() { return [...document.querySelectorAll('.assign-cb:checked')].map(c => parseInt(c.value)); }
+function toggleAssignAll(cb) { document.querySelectorAll('.assign-cb').forEach(c=>c.checked=cb.checked); }
+function updateAssignAll() { const cbs=[...document.querySelectorAll('.assign-cb')]; const aa=document.getElementById('assign-all'); if(aa)aa.checked=cbs.length&&cbs.every(c=>c.checked); }
+function getAssignedIds() { return [...document.querySelectorAll('.assign-cb:checked')].map(c=>parseInt(c.value)); }
 
 // ── Homework ───────────────────────────────────────────────────────────────
-function hwFileChosen(input) { const f = input.files[0]; if(!f) return; currentHwFile = f; document.getElementById('hw-chosen').textContent = '📎 ' + f.name; }
-
+function hwFileChosen(input) { const f=input.files[0]; if(!f)return; currentHwFile=f; document.getElementById('hw-chosen').textContent='📎 '+f.name; }
 function saveHomework() {
-  const title = document.getElementById('hw-title').value.trim();
-  const date = document.getElementById('hw-date').value;
-  const link = document.getElementById('hw-link').value.trim();
-  const assignedIds = getAssignedIds();
-  if (!title) { alert('Please enter a title.'); return; }
-  const hw = { id: Date.now(), title, date, link, fileName: null, fileData: null, fileType: null, assignedIds };
-  if (currentHwFile) {
-    const r = new FileReader();
-    r.onload = e => { hw.fileName = currentHwFile.name; hw.fileData = e.target.result; hw.fileType = currentHwFile.type; finishHw(hw); };
-    r.readAsDataURL(currentHwFile);
-  } else { finishHw(hw); }
+  const title=document.getElementById('hw-title').value.trim();
+  const date=document.getElementById('hw-date').value;
+  const link=document.getElementById('hw-link').value.trim();
+  const assignedIds=getAssignedIds();
+  if(!title){alert('Please enter a title.');return;}
+  const hw={id:Date.now(),title,date,link,fileName:null,fileData:null,fileType:null,assignedIds};
+  if(currentHwFile){const r=new FileReader();r.onload=e=>{hw.fileName=currentHwFile.name;hw.fileData=e.target.result;hw.fileType=currentHwFile.type;finishHw(hw);};r.readAsDataURL(currentHwFile);}
+  else{finishHw(hw);}
 }
 function finishHw(hw) {
-  homeworks.push(hw);
-  fbSave('homeworks', arrayToObj(homeworks));
-  closeModal('hw-modal');
-  ['hw-title','hw-date','hw-link'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('hw-chosen').textContent = ''; document.getElementById('hw-file').value = ''; currentHwFile = null;
+  homeworks.push(hw); fbSave('homeworks',arrayToObj(homeworks)); closeModal('hw-modal');
+  ['hw-title','hw-date','hw-link'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('hw-chosen').textContent=''; document.getElementById('hw-file').value=''; currentHwFile=null;
 }
-function deleteHw(id) { homeworks = homeworks.filter(h => h.id !== id); fbSave('homeworks', arrayToObj(homeworks)); }
-
+function deleteHw(id) { homeworks=homeworks.filter(h=>h.id!==id); fbSave('homeworks',arrayToObj(homeworks)); }
 function getAssignedNames(hw) {
-  if (!hw.assignedIds || !hw.assignedIds.length) return 'All students';
-  return hw.assignedIds.map(id => { const s = students.find(s => s.id === id); return s ? s.name : ''; }).filter(Boolean).join(', ');
+  if(!hw.assignedIds||!hw.assignedIds.length) return 'All students';
+  return hw.assignedIds.map(id=>{const s=students.find(s=>s.id===id);return s?s.name:'';}).filter(Boolean).join(', ');
 }
-function isAssignedToStudent(hw, name) {
-  if (!name) return false;
-  if (!hw.assignedIds || !hw.assignedIds.length) return true;
-  return hw.assignedIds.some(id => { const s = students.find(s => s.id === id); return s && s.name.toLowerCase() === name.toLowerCase(); });
+function isAssignedToStudent(hw,name) {
+  if(!name)return false;
+  if(!hw.assignedIds||!hw.assignedIds.length)return true;
+  return hw.assignedIds.some(id=>{const s=students.find(s=>s.id===id);return s&&s.name.toLowerCase()===name.toLowerCase();});
 }
-
 function renderHwList() {
-  const el = document.getElementById('hw-list');
-  if (!homeworks.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">No assignments yet.</div>'; return; }
-  el.innerHTML = homeworks.map(hw => `
+  const el=document.getElementById('hw-list');
+  if(!homeworks.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No assignments yet.</div>';return;}
+  el.innerHTML=homeworks.map(hw=>`
     <div class="hw-item">
       <div class="hw-item-title">${hw.title}</div>
-      ${hw.date ? `<div class="hw-item-date">Due: ${fmtDate(hw.date)}</div>` : ''}
+      ${hw.date?`<div class="hw-item-date">Due: ${fmtDate(hw.date)}</div>`:''}
       <div class="hw-item-assigned">👥 ${getAssignedNames(hw)}</div>
       <div class="hw-item-actions">
-        ${hw.link ? `<a class="hw-link" href="${hw.link}" target="_blank">Open link</a>` : ''}
-        ${hw.fileData ? `<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>` : ''}
+        ${hw.link?`<a class="hw-link" href="${hw.link}" target="_blank">Open link</a>`:''}
+        ${hw.fileData?`<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>`:''}
         <button class="hw-del" onclick="deleteHw(${hw.id})">Delete</button>
       </div>
     </div>`).join('');
 }
-
 function renderHwBanner() {
-  const el = document.getElementById('hw-banner');
-  if (isTeacher) { el.innerHTML = ''; return; }
-  if (!studentName) { el.innerHTML = ''; return; }
-  const myHw = homeworks.filter(hw => isAssignedToStudent(hw, studentName));
-  if (!myHw.length) {
-    el.innerHTML = `<div class="empty-hw"><div class="empty-hw-icon">📭</div><div class="empty-hw-text">No homework assigned to <strong>${studentName}</strong> yet.</div></div>`;
-    return;
-  }
-  el.innerHTML = myHw.map(hw => `
-    <div class="submit-banner">
+  const el=document.getElementById('hw-banner');
+  if(isTeacher){el.innerHTML='';return;}
+  if(!studentName){el.innerHTML='';return;}
+  const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,studentName));
+  if(!myHw.length){el.innerHTML=`<div class="empty-hw"><div class="empty-hw-icon">📭</div><div class="empty-hw-text">No homework assigned to <strong>${studentName}</strong> yet.</div></div>`;return;}
+  el.innerHTML=myHw.map(hw=>{
+    const mySub=submissions.find(s=>s.hwId===hw.id&&s.studentName===studentName);
+    const myFeedback=mySub&&mySub.feedback?`<div class="feedback-box"><div class="feedback-label">Teacher feedback</div><div class="feedback-text">${mySub.feedback}</div></div>`:'';
+    return `<div class="submit-banner">
       <div style="flex:1;">
         <div class="submit-banner-title">📋 ${hw.title}</div>
-        ${hw.date ? `<div class="submit-banner-text">Due: ${fmtDate(hw.date)}</div>` : ''}
-        ${hw.fileData && isAudio(hw.fileType) ? `<audio controls src="${hw.fileData}"></audio>` : ''}
-        ${hw.fileData && !isAudio(hw.fileType) ? `<button class="hw-link" style="margin-top:6px;" onclick="viewFile(${hw.id})">View file</button>` : ''}
-        ${hw.link ? `<a class="hw-link" style="margin-top:6px;display:inline-block;" href="${hw.link}" target="_blank">Open link</a>` : ''}
+        ${hw.date?`<div class="submit-banner-text">Due: ${fmtDate(hw.date)}</div>`:''}
+        ${hw.fileData&&isAudio(hw.fileType)?`<audio controls src="${hw.fileData}"></audio>`:''}
+        ${hw.fileData&&!isAudio(hw.fileType)?`<button class="hw-link" style="margin-top:6px;" onclick="viewFile(${hw.id})">View file</button>`:''}
+        ${hw.link?`<a class="hw-link" style="margin-top:6px;display:inline-block;" href="${hw.link}" target="_blank">Open link</a>`:''}
+        ${myFeedback}
+        ${mySub?`<div style="font-size:11px;color:var(--green);margin-top:6px;">✓ Submitted on ${mySub.date}</div>`:''}
       </div>
-      <button class="submit-hw-btn" onclick="openSubmitModal(${hw.id})">Submit work</button>
-    </div>`).join('');
+      ${!mySub?`<button class="submit-hw-btn" onclick="openSubmitModal(${hw.id})">Submit work</button>`:''}
+    </div>`;
+  }).join('');
 }
 
 // ── Students ───────────────────────────────────────────────────────────────
 function saveStudent() {
-  const name = document.getElementById('student-name').value.trim(); if (!name) { alert('Please enter a name.'); return; }
-  if (editingStudentId !== null) { students = students.map(s => s.id === editingStudentId ? {...s, name} : s); editingStudentId = null; document.getElementById('student-modal-title').textContent = 'Add Student'; }
-  else { students.push({id: Date.now(), name}); }
-  fbSave('students', arrayToObj(students));
-  closeModal('student-modal'); document.getElementById('student-name').value = '';
+  const name=document.getElementById('student-name').value.trim(); if(!name){alert('Please enter a name.');return;}
+  if(editingStudentId!==null){students=students.map(s=>s.id===editingStudentId?{...s,name}:s);editingStudentId=null;document.getElementById('student-modal-title').textContent='Add Student';}
+  else{students.push({id:Date.now(),name});}
+  fbSave('students',arrayToObj(students)); closeModal('student-modal'); document.getElementById('student-name').value='';
 }
-function editStudent(id) { const s = students.find(s => s.id === id); if(!s) return; editingStudentId = id; document.getElementById('student-name').value = s.name; document.getElementById('student-modal-title').textContent = 'Edit Student'; openModal('student-modal'); }
-function deleteStudent(id) { students = students.filter(s => s.id !== id); fbSave('students', arrayToObj(students)); }
-function initials(name) { return name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase(); }
-
+function editStudent(id){const s=students.find(s=>s.id===id);if(!s)return;editingStudentId=id;document.getElementById('student-name').value=s.name;document.getElementById('student-modal-title').textContent='Edit Student';openModal('student-modal');}
+function deleteStudent(id){students=students.filter(s=>s.id!==id);fbSave('students',arrayToObj(students));}
+function initials(name){return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
 function renderStudentList() {
-  const el = document.getElementById('student-list');
-  if (!students.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">No students added yet.</div>'; return; }
-  el.innerHTML = students.map(s => {
-    const sub = submissions.find(sub => sub.studentName.toLowerCase() === s.name.toLowerCase());
-    const myHw = homeworks.filter(hw => isAssignedToStudent(hw, s.name));
+  const el=document.getElementById('student-list');
+  if(!students.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No students added yet.</div>';return;}
+  el.innerHTML=students.map(s=>{
+    const sub=submissions.find(sub=>sub.studentName.toLowerCase()===s.name.toLowerCase());
+    const myHw=homeworks.filter(hw=>isAssignedToStudent(hw,s.name));
     return `<div class="student-item">
       <div class="student-avatar">${initials(s.name)}</div>
       <div class="student-name">${s.name}<div style="font-size:10px;color:var(--text3);">${myHw.length} assignment${myHw.length!==1?'s':''}</div></div>
@@ -669,143 +658,134 @@ function renderStudentList() {
 
 // ── Submissions ────────────────────────────────────────────────────────────
 function openSubmitModal(hwId) {
-  currentSubmitHwId = hwId; currentSubmitFile = null; currentSubmitData = null;
-  document.getElementById('submit-chosen').textContent = ''; document.getElementById('submit-file').value = '';
-  const hw = homeworks.find(h => h.id === hwId);
-  document.getElementById('submit-hw-name').textContent = hw ? 'Assignment: ' + hw.title : '';
+  currentSubmitHwId=hwId; currentSubmitFile=null; currentSubmitData=null;
+  document.getElementById('submit-chosen').textContent=''; document.getElementById('submit-file').value='';
+  const hw=homeworks.find(h=>h.id===hwId);
+  document.getElementById('submit-hw-name').textContent=hw?'Assignment: '+hw.title:'';
   openModal('submit-modal');
 }
-function submitFileChosen(input) {
-  const f = input.files[0]; if(!f) return;
-  currentSubmitFile = f; document.getElementById('submit-chosen').textContent = '📎 ' + f.name;
-  const r = new FileReader(); r.onload = e => { currentSubmitData = e.target.result; }; r.readAsDataURL(f);
-}
-function doSubmit() {
-  if (!studentName) { alert('Please enter your name at the top of the page first.'); closeModal('submit-modal'); return; }
-  if (!currentSubmitFile) { alert('Please upload a file.'); return; }
-  const save = () => {
-    const sub = {id: Date.now(), studentName, hwId: currentSubmitHwId, fileName: currentSubmitFile.name, fileData: currentSubmitData, fileType: currentSubmitFile.type, date: new Date().toLocaleDateString()};
-    submissions.push(sub);
-    fbSave('submissions', arrayToObj(submissions));
-    closeModal('submit-modal');
+function submitFileChosen(input){const f=input.files[0];if(!f)return;currentSubmitFile=f;document.getElementById('submit-chosen').textContent='📎 '+f.name;const r=new FileReader();r.onload=e=>{currentSubmitData=e.target.result;};r.readAsDataURL(f);}
+function doSubmit(){
+  if(!studentName){alert('Please enter your code at the top first.');closeModal('submit-modal');return;}
+  if(!currentSubmitFile){alert('Please upload a file.');return;}
+  const save=()=>{
+    const sub={id:Date.now(),studentName,hwId:currentSubmitHwId,fileName:currentSubmitFile.name,fileData:currentSubmitData,fileType:currentSubmitFile.type,date:new Date().toLocaleDateString(),feedback:''};
+    submissions.push(sub); fbSave('submissions',arrayToObj(submissions)); closeModal('submit-modal');
     alert('✅ Homework submitted successfully!');
   };
-  currentSubmitData ? save() : setTimeout(save, 600);
+  currentSubmitData?save():setTimeout(save,600);
 }
+
 function renderSubmissions() {
-  const el = document.getElementById('submissions-list');
-  if (!submissions.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text3);">No submissions yet.</div>'; return; }
-  el.innerHTML = submissions.map(sub => {
-    const hw = homeworks.find(h => h.id === sub.hwId);
+  const el=document.getElementById('submissions-list');
+  if(!submissions.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No submissions yet.</div>';return;}
+  el.innerHTML=submissions.map(sub=>{
+    const hw=homeworks.find(h=>h.id===sub.hwId);
     return `<div class="sub-item">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
         <div class="student-avatar" style="background:var(--blue-light);color:var(--blue);">${initials(sub.studentName)}</div>
         <div class="sub-item-name">${sub.studentName}</div>
       </div>
-      <div class="sub-item-meta">${hw ? hw.title + ' · ' : ''}${sub.date}</div>
+      <div class="sub-item-meta">${hw?hw.title+' · ':''}${sub.date}</div>
       <button class="view-file-btn" onclick="viewSubmission(${sub.id})">▶ View / Play</button>
+      <button class="feedback-btn" onclick="openFeedback(${sub.id})">✏️ Feedback</button>
+      ${sub.feedback?`<div class="feedback-box" style="margin-top:8px;"><div class="feedback-label">Your feedback</div><div class="feedback-text">${sub.feedback}</div></div>`:''}
+      <div id="feedback-form-${sub.id}" style="display:none;">
+        <textarea class="feedback-input" id="feedback-text-${sub.id}" placeholder="Write your feedback here...">${sub.feedback||''}</textarea>
+        <button class="feedback-save-btn" onclick="saveFeedback(${sub.id})">Save feedback</button>
+      </div>
     </div>`;
   }).join('');
 }
 
-// ── File viewer ─────────────────────────────────────────────────────────────
-const AUDIO_TYPES = ['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm'];
-function isAudio(t) { return t && (AUDIO_TYPES.includes(t) || t.startsWith('audio/')); }
-function isImage(t) { return t && t.startsWith('image/'); }
-function isPdf(t) { return t === 'application/pdf'; }
+function openFeedback(subId) {
+  const form=document.getElementById('feedback-form-'+subId);
+  form.style.display=form.style.display==='none'?'block':'none';
+}
+function saveFeedback(subId) {
+  const text=document.getElementById('feedback-text-'+subId).value.trim();
+  submissions=submissions.map(s=>s.id===subId?{...s,feedback:text}:s);
+  fbSave('submissions',arrayToObj(submissions));
+}
 
-function viewFile(hwId) { const hw = homeworks.find(h => h.id === hwId); if(!hw||!hw.fileData) return; showViewer(hw.title, hw.fileData, hw.fileType, hw.fileName); }
-function viewSubmission(subId) { const sub = submissions.find(s => s.id === subId); if(!sub) return; showViewer(sub.studentName + "'s work", sub.fileData, sub.fileType, sub.fileName); }
-function showViewer(title, dataUrl, fileType, fileName) {
-  document.getElementById('view-title').textContent = title;
-  let body = '';
-  if (isAudio(fileType)) { body = `<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div><audio controls style="width:100%;" src="${dataUrl}"></audio>`; }
-  else if (isImage(fileType)) { body = `<img src="${dataUrl}" style="max-width:100%;border-radius:8px;" />`; }
-  else if (isPdf(fileType)) { body = `<iframe src="${dataUrl}" style="width:100%;height:420px;border:none;border-radius:8px;"></iframe>`; }
-  else { body = `<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p><a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`; }
-  document.getElementById('view-body').innerHTML = body;
+// ── File viewer ─────────────────────────────────────────────────────────────
+const AUDIO_TYPES=['audio/mpeg','audio/mp4','audio/m4a','audio/wav','audio/aac','audio/ogg','audio/webm'];
+function isAudio(t){return t&&(AUDIO_TYPES.includes(t)||t.startsWith('audio/'));}
+function isImage(t){return t&&t.startsWith('image/');}
+function isPdf(t){return t==='application/pdf';}
+function viewFile(hwId){const hw=homeworks.find(h=>h.id===hwId);if(!hw||!hw.fileData)return;showViewer(hw.title,hw.fileData,hw.fileType,hw.fileName);}
+function viewSubmission(subId){const sub=submissions.find(s=>s.id===subId);if(!sub)return;showViewer(sub.studentName+"'s work",sub.fileData,sub.fileType,sub.fileName);}
+function showViewer(title,dataUrl,fileType,fileName){
+  document.getElementById('view-title').textContent=title;
+  let body='';
+  if(isAudio(fileType)){body=`<div style="margin-bottom:0.5rem;font-size:13px;color:var(--text2);">🎙️ ${fileName}</div><audio controls style="width:100%;" src="${dataUrl}"></audio>`;}
+  else if(isImage(fileType)){body=`<img src="${dataUrl}" style="max-width:100%;border-radius:8px;" />`;}
+  else if(isPdf(fileType)){body=`<iframe src="${dataUrl}" style="width:100%;height:420px;border:none;border-radius:8px;"></iframe>`;}
+  else{body=`<p style="font-size:14px;color:var(--text2);margin-bottom:1rem;">📎 ${fileName}</p><a href="${dataUrl}" download="${fileName}" style="padding:8px 18px;background:var(--teal);color:white;border-radius:8px;text-decoration:none;font-size:14px;display:inline-block;">Download file</a>`;}
+  document.getElementById('view-body').innerHTML=body;
   openModal('view-modal');
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-function fmtDate(s) { if(!s) return ''; const d = new Date(s+'T12:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtDate(s){if(!s)return'';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 
 // ── Speech ─────────────────────────────────────────────────────────────────
-function speak(text) {
-  if (!window.speechSynthesis) return;
+function speak(text){
+  if(!window.speechSynthesis)return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-CN'; u.rate = 0.85; u.pitch = 1;
-  const zh = window.speechSynthesis.getVoices().find(v => v.lang.startsWith('zh'));
-  if (zh) u.voice = zh;
-  const btn = document.getElementById('speak-btn-main');
-  if (btn) { btn.classList.add('speaking'); u.onend = () => btn.classList.remove('speaking'); }
+  const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=0.85;u.pitch=1;
+  const zh=window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('zh'));if(zh)u.voice=zh;
+  const btn=document.getElementById('speak-btn-main');
+  if(btn){btn.classList.add('speaking');u.onend=()=>btn.classList.remove('speaking');}
   window.speechSynthesis.speak(u);
 }
 
 // ── Flashcards ─────────────────────────────────────────────────────────────
-function typeTag(t) { return `<span class="card-tag tag-${t}">${t}</span>`; }
-function buildTabs() {
-  const c = document.getElementById('tabs'); c.innerHTML = '';
-  Object.keys(DECKS).forEach(name => { const b = document.createElement('button'); b.className = 'tab'+(name===currentDeck?' active':''); b.textContent = name; b.onclick = () => { currentDeck = name; buildTabs(); loadDeck(); }; c.appendChild(b); });
-}
-function loadDeck() { cards = [...DECKS[currentDeck]]; idx = 0; flipped = false; quizScore = 0; quizTotal = 0; hideScore(); mode === 'flash' ? renderCard() : startQuiz(); }
-function setMode(m) { mode = m; document.getElementById('btn-flash').classList.toggle('active', m==='flash'); document.getElementById('btn-quiz').classList.toggle('active', m==='quiz'); document.getElementById('flash-view').style.display = m==='flash'?'':'none'; document.getElementById('quiz-view').style.display = m==='quiz'?'':'none'; hideScore(); m==='flash'?renderCard():startQuiz(); }
-function shuffle() { for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; } idx=0; flipped=false; mode==='flash'?renderCard():(quizCards=[...cards],quizIdx=0,quizScore=0,quizTotal=0,hideScore(),renderQuiz()); }
-function hideScore() { const s=document.getElementById('score-display'); s.style.display='none'; s.textContent=''; }
-function showScore(t) { const s=document.getElementById('score-display'); s.style.display=''; s.textContent=t; }
-function renderCard() {
-  if (!cards.length) return;
-  const c = cards[idx]; flipped = false;
+function typeTag(t){return`<span class="card-tag tag-${t}">${t}</span>`;}
+function buildTabs(){const c=document.getElementById('tabs');c.innerHTML='';Object.keys(DECKS).forEach(name=>{const b=document.createElement('button');b.className='tab'+(name===currentDeck?' active':'');b.textContent=name;b.onclick=()=>{currentDeck=name;buildTabs();loadDeck();};c.appendChild(b);});}
+function loadDeck(){cards=[...DECKS[currentDeck]];idx=0;flipped=false;quizScore=0;quizTotal=0;hideScore();mode==='flash'?renderCard():startQuiz();}
+function setMode(m){mode=m;document.getElementById('btn-flash').classList.toggle('active',m==='flash');document.getElementById('btn-quiz').classList.toggle('active',m==='quiz');document.getElementById('flash-view').style.display=m==='flash'?'':'none';document.getElementById('quiz-view').style.display=m==='quiz'?'':'none';hideScore();m==='flash'?renderCard():startQuiz();}
+function shuffle(){for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}idx=0;flipped=false;mode==='flash'?renderCard():(quizCards=[...cards],quizIdx=0,quizScore=0,quizTotal=0,hideScore(),renderQuiz());}
+function hideScore(){const s=document.getElementById('score-display');s.style.display='none';s.textContent='';}
+function showScore(t){const s=document.getElementById('score-display');s.style.display='';s.textContent=t;}
+function renderCard(){
+  if(!cards.length)return;
+  const c=cards[idx];flipped=false;
   document.getElementById('card').classList.remove('flipped');
-  document.getElementById('front-face').innerHTML = `${typeTag(c.type)}<div class="card-chinese">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="speak-btn" id="speak-btn-main" onclick="event.stopPropagation();speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div class="card-hint">tap card to reveal</div>`;
-  document.getElementById('back-face').innerHTML = `${typeTag(c.type)}<div class="card-english">${c.en}</div>${c.note?`<div class="card-note">💡 ${c.note}</div>`:''}<div class="card-sub">${c.ch} · ${c.py}</div>`;
-  document.getElementById('counter').textContent = `${idx+1} / ${cards.length}`;
-  document.getElementById('prog').style.width = `${((idx+1)/cards.length)*100}%`;
+  document.getElementById('front-face').innerHTML=`${typeTag(c.type)}<div class="card-chinese">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="speak-btn" id="speak-btn-main" onclick="event.stopPropagation();speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div class="card-hint">tap card to reveal</div>`;
+  document.getElementById('back-face').innerHTML=`${typeTag(c.type)}<div class="card-english">${c.en}</div>${c.note?`<div class="card-note">💡 ${c.note}</div>`:''}<div class="card-sub">${c.ch} · ${c.py}</div>`;
+  document.getElementById('counter').textContent=`${idx+1} / ${cards.length}`;
+  document.getElementById('prog').style.width=`${((idx+1)/cards.length)*100}%`;
 }
-function flip() { flipped = !flipped; document.getElementById('card').classList.toggle('flipped', flipped); }
-function next() { if(idx<cards.length-1){ idx++; renderCard(); } }
-function prev() { if(idx>0){ idx--; renderCard(); } }
+function flip(){flipped=!flipped;document.getElementById('card').classList.toggle('flipped',flipped);}
+function next(){if(idx<cards.length-1){idx++;renderCard();}}
+function prev(){if(idx>0){idx--;renderCard();}}
 
 // ── Quiz ───────────────────────────────────────────────────────────────────
-function startQuiz() { quizCards=[...cards].sort(()=>Math.random()-0.5); quizIdx=0; quizScore=0; quizTotal=0; quizAnswered=false; hideScore(); renderQuiz(); }
-function renderQuiz() {
-  const body = document.getElementById('quiz-body');
-  if (quizIdx >= quizCards.length) {
-    const pct = Math.round(quizScore/quizTotal*100);
-    body.innerHTML = `<div class="done-card"><div class="done-icon">${pct>=80?'🎉':pct>=50?'👍':'📚'}</div><div class="done-score">${quizScore} / ${quizTotal}</div><div class="done-pct">${pct}% correct</div><button class="retry-btn" onclick="startQuiz()">Try again</button></div>`;
-    showScore(`${quizScore}/${quizTotal}`); document.getElementById('prog').style.width='100%'; return;
-  }
-  const c = quizCards[quizIdx]; quizAnswered = false;
-  document.getElementById('prog').style.width = `${((quizIdx+1)/quizCards.length)*100}%`;
-  const wrong = DECKS[currentDeck].filter(x=>x.en!==c.en).sort(()=>Math.random()-0.5).slice(0,3);
-  const opts = [...wrong,c].sort(()=>Math.random()-0.5);
-  body.innerHTML = `<div class="quiz-question">${typeTag(c.type)}<div class="card-chinese" style="font-size:32px;margin:0.5rem 0;">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="quiz-speak" onclick="speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div style="font-size:12px;color:var(--text3);margin-top:0.75rem;">${quizIdx+1} / ${quizCards.length} · ✓ ${quizScore}</div></div>
+function startQuiz(){quizCards=[...cards].sort(()=>Math.random()-0.5);quizIdx=0;quizScore=0;quizTotal=0;quizAnswered=false;hideScore();renderQuiz();}
+function renderQuiz(){
+  const body=document.getElementById('quiz-body');
+  if(quizIdx>=quizCards.length){const pct=Math.round(quizScore/quizTotal*100);body.innerHTML=`<div class="done-card"><div class="done-icon">${pct>=80?'🎉':pct>=50?'👍':'📚'}</div><div class="done-score">${quizScore} / ${quizTotal}</div><div class="done-pct">${pct}% correct</div><button class="retry-btn" onclick="startQuiz()">Try again</button></div>`;showScore(`${quizScore}/${quizTotal}`);document.getElementById('prog').style.width='100%';return;}
+  const c=quizCards[quizIdx];quizAnswered=false;
+  document.getElementById('prog').style.width=`${((quizIdx+1)/quizCards.length)*100}%`;
+  const wrong=DECKS[currentDeck].filter(x=>x.en!==c.en).sort(()=>Math.random()-0.5).slice(0,3);
+  const opts=[...wrong,c].sort(()=>Math.random()-0.5);
+  body.innerHTML=`<div class="quiz-question">${typeTag(c.type)}<div class="card-chinese" style="font-size:32px;margin:0.5rem 0;">${c.ch}</div><div class="card-pinyin">${c.py}</div><button class="quiz-speak" onclick="speak('${c.ch.replace(/'/g,"\\'")}')">&#128266; Listen</button><div style="font-size:12px;color:var(--text3);margin-top:0.75rem;">${quizIdx+1} / ${quizCards.length} · ✓ ${quizScore}</div></div>
   <div class="quiz-options">${opts.map(o=>`<button class="quiz-opt" onclick="checkAnswer(this,'${o.en.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${c.en.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">${o.en}</button>`).join('')}</div>
   <div style="text-align:right;"><button class="nav-btn" id="next-q-btn" onclick="quizIdx++;renderQuiz();" style="display:none;">Next →</button></div>`;
 }
-function checkAnswer(btn,chosen,correct) {
-  if(quizAnswered) return; quizAnswered=true; quizTotal++;
-  document.querySelectorAll('.quiz-opt').forEach(b=>{ b.disabled=true; if(b.textContent.trim()===correct) b.classList.add('correct'); });
-  if(chosen===correct){ quizScore++; btn.classList.add('correct'); } else btn.classList.add('wrong');
-  showScore(`${quizScore}/${quizTotal}`); document.getElementById('next-q-btn').style.display='';
-}
+function checkAnswer(btn,chosen,correct){if(quizAnswered)return;quizAnswered=true;quizTotal++;document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=true;if(b.textContent.trim()===correct)b.classList.add('correct');});if(chosen===correct){quizScore++;btn.classList.add('correct');}else btn.classList.add('wrong');showScore(`${quizScore}/${quizTotal}`);document.getElementById('next-q-btn').style.display='';}
 
 // ── Drag & drop ────────────────────────────────────────────────────────────
-['hw-drop','submit-drop'].forEach(id => {
-  const el = document.getElementById(id); if(!el) return;
-  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('dragover'); });
-  el.addEventListener('dragleave', () => el.classList.remove('dragover'));
-  el.addEventListener('drop', e => {
-    e.preventDefault(); el.classList.remove('dragover');
-    const f = e.dataTransfer.files[0]; if(!f) return;
-    if(id==='hw-drop'){ currentHwFile=f; document.getElementById('hw-chosen').textContent='📎 '+f.name; }
-    else { currentSubmitFile=f; document.getElementById('submit-chosen').textContent='📎 '+f.name; const r=new FileReader(); r.onload=ev=>{ currentSubmitData=ev.target.result; }; r.readAsDataURL(f); }
-  });
+['hw-drop','submit-drop'].forEach(id=>{
+  const el=document.getElementById(id);if(!el)return;
+  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('dragover');});
+  el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
+  el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');const f=e.dataTransfer.files[0];if(!f)return;if(id==='hw-drop'){currentHwFile=f;document.getElementById('hw-chosen').textContent='📎 '+f.name;}else{currentSubmitFile=f;document.getElementById('submit-chosen').textContent='📎 '+f.name;const r=new FileReader();r.onload=ev=>{currentSubmitData=ev.target.result;};r.readAsDataURL(f);}});
 });
 
 // ── Init ───────────────────────────────────────────────────────────────────
-if(window.speechSynthesis) window.speechSynthesis.getVoices();
+if(window.speechSynthesis)window.speechSynthesis.getVoices();
 buildTabs();
 loadDeck();
 initFirebase();
