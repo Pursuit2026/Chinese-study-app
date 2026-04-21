@@ -471,11 +471,13 @@ function confirmName() {
   studentName=student.name;
   document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Viewing as:</span><span class="name-tag">${studentName} <button onclick="clearName()">×</button></span>`;
   renderHwBanner();
+  renderHwList();
 }
 function clearName() {
   studentName='';
   document.getElementById('name-bar').innerHTML=`<span class="name-entry-label">Your code:</span><input id="name-input" placeholder="Enter your student code (e.g. RS01)" onkeydown="if(event.key==='Enter')confirmName()" /><button class="name-confirm-btn" onclick="confirmName()">Go</button><div id="name-error" style="width:100%;font-size:12px;color:var(--red);display:none;">Invalid code. Please check your code and try again.</div>`;
   renderHwBanner();
+  renderHwList();
 }
 
 // ── Modals ─────────────────────────────────────────────────────────────────
@@ -539,12 +541,17 @@ function isAssignedToStudent(hw,name){
 }
 function renderHwList(){
   const el=document.getElementById('hw-list');
-  if(!homeworks.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);">No assignments yet.</div>';return;}
-  el.innerHTML=homeworks.map(hw=>`
+  // In student mode, only show homework assigned to logged-in student
+  const visibleHw = isTeacher ? homeworks : homeworks.filter(hw=>isAssignedToStudent(hw, studentName));
+  if(!visibleHw.length){
+    el.innerHTML=`<div style="font-size:12px;color:var(--text3);">${isTeacher?'No assignments yet.':studentName?'No homework assigned to you yet.':'Enter your code to see your homework.'}</div>`;
+    return;
+  }
+  el.innerHTML=visibleHw.map(hw=>`
     <div class="hw-item">
       <div class="hw-item-title">${hw.title}</div>
       ${hw.date?`<div class="hw-item-date">Due: ${fmtDate(hw.date)}</div>`:''}
-      <div class="hw-item-assigned">👥 ${getAssignedNames(hw)}</div>
+      ${isTeacher?`<div class="hw-item-assigned">👥 ${getAssignedNames(hw)}</div>`:''}
       <div class="hw-item-actions">
         ${hw.link?`<a class="hw-link" href="${hw.link}" target="_blank">Open link</a>`:''}
         ${hw.fileData?`<button class="hw-link" onclick="viewFile(${hw.id})">View file</button>`:''}
